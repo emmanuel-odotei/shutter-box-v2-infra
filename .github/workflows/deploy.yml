@@ -1,0 +1,32 @@
+name: Deploy ECS App with Nested Stacks
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/GitSyncDeploymentRole
+          aws-region: eu-west-1
+
+      - name: Install GitSync CLI
+        run: |
+          curl -sSL https://raw.githubusercontent.com/awslabs/git-sync/main/install.sh | bash
+
+      - name: Deploy CloudFormation using GitSync
+        run: |
+          gitsync deploy --config image-app-infrastructure/gitsync-config.yml

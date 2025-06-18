@@ -11,15 +11,15 @@ Resources:
   VPCStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: ./vpc.yml
+      TemplateURL: !Sub https://${S3Bucket}/templates/vpc.yml
       Parameters:
-        EnvironmentName: image-app
+        AppName: image-app
 
   ECSAppStack:
     Type: AWS::CloudFormation::Stack
     DependsOn: VPCStack
     Properties:
-      TemplateURL: ./ecs-cluster-alb-fargate.yml
+      TemplateURL: !Sub https://${S3Bucket}/templates/ecs-cluster-alb-fargate.yml
       Parameters:
         VPCId: !GetAtt VPCStack.Outputs.VPCId
         PublicSubnet1: !GetAtt VPCStack.Outputs.PublicSubnet1Id
