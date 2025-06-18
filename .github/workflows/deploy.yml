@@ -25,7 +25,7 @@ jobs:
 
       - name: Install GitSync CLI
         run: |
-          npm install -g @aws/git-sync
+          curl -sSL https://gitsync.io/install.sh | bash
 
       - name: Deploy CloudFormation using GitSync
         run: |
