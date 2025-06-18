@@ -26,9 +26,12 @@ jobs:
       - name: Install GitSync CLI from GitHub Release
         run: |
           GITSYNC_VERSION=0.1.17
-          curl -Lo gitsync https://github.com/awslabs/git-sync/releases/download/v${GITSYNC_VERSION}/gitsync-linux-amd64
+          curl -L -o gitsync https://github.com/awslabs/git-sync/releases/download/v${GITSYNC_VERSION}/gitsync-linux-amd64
           chmod +x gitsync
           sudo mv gitsync /usr/local/bin/gitsync
+
+      - name: Verify GitSync version
+        run: gitsync --version
 
       - name: Deploy CloudFormation using GitSync
         run: |
