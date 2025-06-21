@@ -28,6 +28,17 @@ Resources:
         PrivateSubnet2: !GetAtt VPCStack.Outputs.PrivateSubnet2Id
         ECRImage: !Ref ECRImage
 
+  CodeDeployStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://shutterbox-cf-templates.s3.eu-west-1.amazonaws.com/templates/ecs-codedeploy.yml
+      Parameters:
+        ClusterName: !ImportValue ClusterName
+        ServiceName: !ImportValue ServiceName
+        TargetGroup1: !ImportValue TargetGroup1Name
+        TargetGroup2: !ImportValue TargetGroup2Name
+        ListenerArn: !ImportValue ListenerArn
+
 Outputs:
   LoadBalancerDNS:
     Description: ALB DNS to access app

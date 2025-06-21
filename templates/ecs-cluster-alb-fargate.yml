@@ -92,6 +92,18 @@ Resources:
       HealthCheckPath: /actuator/health
       Matcher:
         HttpCode: 200-299
+  
+    TargetGroup2:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: image-app-tg-2
+      Port: 8082
+      Protocol: HTTP
+      VpcId: !Ref VPCId
+      TargetType: ip
+      HealthCheckPath: /actuator/health
+      Matcher:
+        HttpCode: 200-299
 
 # Load Balancer Listener
   Listener:
@@ -141,7 +153,7 @@ Resources:
       LaunchType: FARGATE
       DesiredCount: 1
       DeploymentController:
-        Type: ECS
+        Type: CODE_DEPLOY
       NetworkConfiguration:
         AwsvpcConfiguration:
           AssignPublicIp: DISABLED
@@ -186,3 +198,33 @@ Outputs:
   S3BucketName:
     Description: S3 bucket for image storage
     Value: !Ref ImageAppS3Bucket
+
+  ClusterName:
+    Description: Name of the ECS Cluster
+    Value: !Ref ECSCluster
+    Export:
+      Name: ClusterName
+
+  ServiceName:
+    Description: ECS Service Name
+    Value: !Ref ECSService
+    Export:
+      Name: ServiceName
+
+  TargetGroup1Name:
+    Description: Name of the Target Group (will also be used in Codedeploy TG Pair)
+    Value: !GetAtt TargetGroup.TargetGroupName
+    Export:
+      Name: TargetGroup1Name
+
+  TargetGroup2Name:
+    Description: Name of the second target group for blue/green
+    Value: !GetAtt TargetGroup2.TargetGroupName
+    Export:
+      Name: TargetGroup2Name
+
+  ListenerArn:
+    Description: ARN of the Load Balancer Listener
+    Value: !Ref Listener
+    Export:
+      Name: ListenerArn

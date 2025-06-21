@@ -1,0 +1,73 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CodeDeploy ECS Application & Deployment Group
+
+Parameters:
+  ClusterName:
+    Type: String
+  ServiceName:
+    Type: String
+  TargetGroup1:
+    Type: String
+  TargetGroup2:
+    Type: String
+  ListenerArn:
+    Type: String
+
+Resources:
+
+  # CodeDeploy Application
+  CodeDeployApp:
+    Type: AWS::CodeDeploy::Application
+    Properties:
+      ComputePlatform: ECS
+
+  # CodeDeploy IAM Role
+  ECSCodeDeployRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codedeploy.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForECS
+
+  # Deployment Group
+  CodeDeployDeploymentGroup:
+    Type: AWS::CodeDeploy::DeploymentGroup
+    Properties:
+      ApplicationName: !Ref CodeDeployApp
+      DeploymentGroupName: image-app-deploy-group
+      DeploymentConfigName: CodeDeployDefault.ECSAllAtOnce
+      ServiceRoleArn: !GetAtt ECSCodeDeployRole.Arn
+      DeploymentStyle:
+        DeploymentType: BLUE_GREEN
+        DeploymentOption: WITH_TRAFFIC_CONTROL
+      BlueGreenDeploymentConfiguration:
+        TerminateBlueInstancesOnDeploymentSuccess:
+          Action: TERMINATE
+          TerminationWaitTimeInMinutes: 1
+        DeploymentReadyOption:
+          ActionOnTimeout: CONTINUE_DEPLOYMENT
+          WaitTimeInMinutes: 0
+      LoadBalancerInfo:
+        TargetGroupPairInfoList:
+          - TargetGroups:
+              - Name: !Ref TargetGroup1
+              - Name: !Ref TargetGroup2
+            ProdTrafficRoute:
+              ListenerArns:
+                - !Ref ListenerArn
+      ECSService:
+        ClusterName: !Ref ClusterName
+        ServiceName: !Ref ServiceName
+
+Outputs:
+  CodeDeployAppName:
+    Value: !Ref CodeDeployApp
+
+  CodeDeployDeploymentGroupName:
+    Value: !Ref CodeDeployDeploymentGroup
