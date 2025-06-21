@@ -104,7 +104,7 @@ Resources:
       Port: 80
       Protocol: HTTP
 
-#App Log Group In CloudWatch
+# Log Group In CloudWatch
   ImageAppLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
@@ -114,6 +114,7 @@ Resources:
 # ECS Task Definition
   TaskDefinition:
     Type: AWS::ECS::TaskDefinition
+    DependsOn: ImageAppLogGroup
     Properties:
       Family: image-app-task
       Cpu: 256
