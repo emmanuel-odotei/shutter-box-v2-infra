@@ -7,18 +7,17 @@ Parameters:
     Default: image-app
 
 Resources:
-# VPC
+
   ImageAppVPC:
     Type: AWS::EC2::VPC
     Properties:
-      CidrBlock: 10.0.0.0/16
+      CidrBlock: 10.10.0.0/16
       EnableDnsSupport: true
       EnableDnsHostnames: true
       Tags:
         - Key: Name
           Value: !Sub "${AppName}-vpc"
 
-# Internet Gateway
   ImageAppIGW:
     Type: AWS::EC2::InternetGateway
 
@@ -28,12 +27,11 @@ Resources:
       VpcId: !Ref ImageAppVPC
       InternetGatewayId: !Ref ImageAppIGW
 
-# Subnets & Associations
   IAPublicSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref ImageAppVPC
-      CidrBlock: 10.0.1.0/24
+      CidrBlock: 10.10.1.0/24
       AvailabilityZone: !Select [0, !GetAZs '']
       MapPublicIpOnLaunch: true
       Tags:
@@ -44,7 +42,7 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref ImageAppVPC
-      CidrBlock: 10.0.2.0/24
+      CidrBlock: 10.10.2.0/24
       AvailabilityZone: !Select [1, !GetAZs '']
       MapPublicIpOnLaunch: true
       Tags:
@@ -55,7 +53,7 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref ImageAppVPC
-      CidrBlock: 10.0.3.0/24
+      CidrBlock: 10.10.3.0/24
       AvailabilityZone: !Select [0, !GetAZs '']
       Tags:
         - Key: Name
@@ -65,7 +63,7 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref ImageAppVPC
-      CidrBlock: 10.0.4.0/24
+      CidrBlock: 10.10.4.0/24
       AvailabilityZone: !Select [1, !GetAZs '']
       Tags:
         - Key: Name
@@ -96,14 +94,12 @@ Resources:
       SubnetId: !Ref IAPublicSubnet2
       RouteTableId: !Ref IAPublicRouteTable
 
-# Elastic IPs
   EIP1:
     Type: AWS::EC2::EIP
 
   EIP2:
     Type: AWS::EC2::EIP
 
-# Network Address Translation (NAT) Gateway
   NATGateway1:
     Type: AWS::EC2::NatGateway
     Properties:
@@ -116,7 +112,6 @@ Resources:
       AllocationId: !GetAtt EIP2.AllocationId
       SubnetId: !Ref IAPublicSubnet2
 
-# Private Subnets Associations
   IAPrivateRouteTable1:
     Type: AWS::EC2::RouteTable
     Properties:
