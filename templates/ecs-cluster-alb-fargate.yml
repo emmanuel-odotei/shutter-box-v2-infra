@@ -104,6 +104,13 @@ Resources:
       Port: 80
       Protocol: HTTP
 
+#App Log Group
+    ImageAppLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /ecs/image-app
+      RetentionInDays: 7
+
 # ECS Task Definition
   TaskDefinition:
     Type: AWS::ECS::TaskDefinition
