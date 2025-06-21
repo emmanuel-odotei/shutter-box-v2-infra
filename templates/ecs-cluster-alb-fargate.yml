@@ -213,13 +213,13 @@ Outputs:
       Name: ServiceName
 
   TargetGroup1Name:
-    Description: Name of the Target Group
+    Description: Name of the first target group
     Value: !GetAtt TargetGroup.TargetGroupName
     Export:
       Name: TargetGroup1Name
 
   TargetGroup2Name:
-    Description: Name of the second target group for blue/green
+    Description: Name of the second target group
     Value: !GetAtt TargetGroup2.TargetGroupName
     Export:
       Name: TargetGroup2Name
