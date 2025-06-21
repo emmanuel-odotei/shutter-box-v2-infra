@@ -29,7 +29,7 @@ Resources:
       InternetGatewayId: !Ref ImageAppIGW
 
 # Subnets & Associations
-  IAPublicSubnet-1:
+  IAPublicSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref ImageAppVPC
@@ -40,7 +40,7 @@ Resources:
         - Key: Name
           Value: !Sub "${AppName}-public-subnet-1"
 
-  IAPublicSubnet-2:
+  IAPublicSubnet2:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref ImageAppVPC
@@ -51,7 +51,7 @@ Resources:
         - Key: Name
           Value: !Sub "${AppName}-public-subnet-2"
 
-  IAPrivateSubnet-1:
+  IAPrivateSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref ImageAppVPC
@@ -61,7 +61,7 @@ Resources:
         - Key: Name
           Value: !Sub "${AppName}-private-subnet-1"
 
-  IAPrivateSubnet-2:
+  IAPrivateSubnet2:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref ImageAppVPC
@@ -84,16 +84,16 @@ Resources:
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref ImageAppIGW
 
-  IAPublicSubnet-1RouteTableAssoc:
+  IAPublicSubnet1RouteTableAssoc:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
-      SubnetId: !Ref IAPublicSubnet-1
+      SubnetId: !Ref IAPublicSubnet1
       RouteTableId: !Ref IAPublicRouteTable
 
-  IAPublicSubnet-2RouteTableAssoc:
+  IAPublicSubnet2RouteTableAssoc:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
-      SubnetId: !Ref IAPublicSubnet-2
+      SubnetId: !Ref IAPublicSubnet2
       RouteTableId: !Ref IAPublicRouteTable
 
 # Elastic IPs
@@ -108,59 +108,59 @@ Resources:
     Type: AWS::EC2::NatGateway
     Properties:
       AllocationId: !GetAtt EIP1.AllocationId
-      SubnetId: !Ref IAPublicSubnet-1
+      SubnetId: !Ref IAPublicSubnet1
 
   NATGateway2:
     Type: AWS::EC2::NatGateway
     Properties:
       AllocationId: !GetAtt EIP2.AllocationId
-      SubnetId: !Ref IAPublicSubnet-2
+      SubnetId: !Ref IAPublicSubnet2
 
 # Private Subnets Associations
-  IAPrivateRouteTable-1:
+  IAPrivateRouteTable1:
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref ImageAppVPC
 
-  IAPrivateRoute-1:
+  IAPrivateRoute1:
     Type: AWS::EC2::Route
     Properties:
-      RouteTableId: !Ref IAPrivateRouteTable-1
+      RouteTableId: !Ref IAPrivateRouteTable1
       DestinationCidrBlock: 0.0.0.0/0
       NatGatewayId: !Ref NATGateway1
 
-  IAPrivateSubnet-1RouteTableAssoc:
+  IAPrivateSubnet1RouteTableAssoc:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
-      SubnetId: !Ref IAPrivateSubnet-1
-      RouteTableId: !Ref IAPrivateRouteTable-1
+      SubnetId: !Ref IAPrivateSubnet1
+      RouteTableId: !Ref IAPrivateRouteTable1
 
-  IAPrivateRouteTable-2:
+  IAPrivateRouteTable2:
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref ImageAppVPC
 
-  IAPrivateRoute-2:
+  IAPrivateRoute2:
     Type: AWS::EC2::Route
     Properties:
-      RouteTableId: !Ref IAPrivateRouteTable-2
+      RouteTableId: !Ref IAPrivateRouteTable2
       DestinationCidrBlock: 0.0.0.0/0
       NatGatewayId: !Ref NATGateway2
 
-  IAPrivateSubnet-2RouteTableAssoc:
+  IAPrivateSubnet2RouteTableAssoc:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
-      SubnetId: !Ref IAPrivateSubnet-2
-      RouteTableId: !Ref IAPrivateRouteTable-2
+      SubnetId: !Ref IAPrivateSubnet2
+      RouteTableId: !Ref IAPrivateRouteTable2
 
 Outputs:
   VPCId:
     Value: !Ref ImageAppVPC
   PublicSubnet1Id: 
-    Value: !Ref IAPublicSubnet-1
+    Value: !Ref IAPublicSubnet1
   PublicSubnet2Id: 
-    Value: !Ref IAPublicSubnet-2
+    Value: !Ref IAPublicSubnet2
   PrivateSubnet1Id: 
-    Value: !Ref IAPrivateSubnet-1
+    Value: !Ref IAPrivateSubnet1
   PrivateSubnet2Id: 
-    Value: !Ref IAPrivateSubnet-2
+    Value: !Ref IAPrivateSubnet2
