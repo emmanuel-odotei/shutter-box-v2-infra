@@ -25,7 +25,7 @@ jobs:
 
       - name: Upload templates to S3
         run: |
-          aws s3 cp templates/ s3://shutterbox-cfn-templates/templates/ --recursive --region eu-west-1
+          aws s3 cp templates/ s3://shutterbox-cf-templates/templates/ --recursive --region eu-west-1
 
       - name: Deploy CloudFormation stack
         run: |
