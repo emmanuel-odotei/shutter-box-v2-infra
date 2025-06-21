@@ -1,6 +1,7 @@
 name: shutterbox-container-image-app
 region: eu-west-1
-s3BucketPrefix: shutterbox-nested
+s3Bucket: shutterbox-cfn-templates
+s3Prefix: templates
 stacks:
   - name: container-java-root
     template: templates/main.yml

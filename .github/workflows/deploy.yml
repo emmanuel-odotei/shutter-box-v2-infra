@@ -21,19 +21,14 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/GitHubOIDCRole
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: eu-west-1
 
-      - name: Package CloudFormation templates
+      - name: Install GitSync CLI
         run: |
-          aws cloudformation package \
-            --template-file image-app-infrastructure/templates/main.yml \
-            --s3-bucket ${{ secrets.CFN_BUCKET }} \
-            --output-template-file packaged.yml
+          curl -Lo gitsync https://github.com/awslabs/git-sync/releases/latest/download/gitsync-linux-amd64
+          chmod +x gitsync
+          sudo mv gitsync /usr/local/bin/
 
-      - name: Deploy CloudFormation stack
+      - name: Deploy CloudFormation using GitSync
         run: |
-          aws cloudformation deploy \
-            --template-file packaged.yml \
-            --stack-name shutterbox-container-root \
-            --capabilities CAPABILITY_NAMED_IAM \
-            --parameter-overrides ECRImage=${{ secrets.ECR_IMAGE_URI }}
+          gitsync deploy --config image-app-infrastructure/gitsync-config.yml
