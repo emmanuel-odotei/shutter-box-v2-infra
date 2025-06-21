@@ -23,11 +23,14 @@ jobs:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/GitHubOIDCRole
           aws-region: eu-west-1
 
-      - name: Install GitSync CLI
+      - name: Run GitSync via Docker
         run: |
-          curl -Lo gitsync https://github.com/awslabs/git-sync/releases/latest/download/gitsync-linux-amd64
-          chmod +x gitsync
-          sudo mv gitsync /usr/local/bin/
+          docker run --rm \
+            -v "$PWD:/app" \
+            -v "$HOME/.aws:/root/.aws" \
+            -w /app \
+            public.ecr.aws/aws-cloudformation/git-sync:latest \
+            deploy --config image-app-infrastructure/gitsync-config.yml
 
       - name: Deploy CloudFormation using GitSync
         run: |
