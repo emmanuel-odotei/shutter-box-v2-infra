@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Root Stack for ECS Java ShutterBox App with S3, Auto Scaling, ALB
+Description: Root Stack for ECS Java ShutterBox App with S3, Auto Scaling, ALB, Code Deploy
 
 Parameters:
   ECRImage:
