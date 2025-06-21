@@ -17,7 +17,6 @@ Parameters:
     Description: Full URI of the Docker image in ECR.
 
 Resources:
-
 # S3 Bucket
   ImageAppS3Bucket:
     Type: AWS::S3::Bucket
@@ -90,6 +89,10 @@ Resources:
       VpcId: !Ref VPCId
       TargetType: ip
       HealthCheckPath: /actuator/health
+      HealthCheckIntervalSeconds: 30
+      HealthCheckTimeoutSeconds: 10
+      HealthyThresholdCount: 2
+      UnhealthyThresholdCount: 5
       Matcher:
         HttpCode: 200-299
   
@@ -103,6 +106,10 @@ Resources:
       VpcId: !Ref VPCId
       TargetType: ip
       HealthCheckPath: /actuator/health
+      HealthCheckIntervalSeconds: 30
+      HealthCheckTimeoutSeconds: 10
+      HealthyThresholdCount: 2
+      UnhealthyThresholdCount: 5
       Matcher:
         HttpCode: 200-299
 
@@ -172,7 +179,11 @@ Resources:
     Properties:
       MaxCapacity: 3
       MinCapacity: 1
-      ResourceId: !Sub "service/${ECSCluster}/${ECSService}"
+      ResourceId: !Join
+        - "/"
+        - - "service"
+          - !Ref ECSCluster
+          - !Ref ECSService
       RoleARN: !Sub "arn:aws:iam::${AWS::AccountId}:role/aws-service-role/ecs.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_ECSService"
       ScalableDimension: ecs:service:DesiredCount
       ServiceNamespace: ecs
