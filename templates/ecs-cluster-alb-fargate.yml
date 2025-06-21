@@ -45,6 +45,8 @@ Resources:
 # Elastic Container Service (ECS) Cluster
   ECSCluster:
     Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: image-app-cluster
 
 # Application Load Balancer Security Group
   ALBSecurityGroup:
@@ -157,6 +159,7 @@ Resources:
     Type: AWS::ECS::Service
     DependsOn: Listener
     Properties:
+      ServiceName: image-app-service
       Cluster: !Ref ECSCluster
       LaunchType: FARGATE
       DesiredCount: 1
@@ -179,11 +182,7 @@ Resources:
     Properties:
       MaxCapacity: 3
       MinCapacity: 1
-      ResourceId: !Join
-        - "/"
-        - - "service"
-          - !GetAtt ECSCluster.ClusterName
-          - !GetAtt ECSService.ServiceName
+      ResourceId: service/image-app-cluster/image-app-service
       RoleARN: !Sub "arn:aws:iam::${AWS::AccountId}:role/aws-service-role/ecs.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_ECSService"
       ScalableDimension: ecs:service:DesiredCount
       ServiceNamespace: ecs
