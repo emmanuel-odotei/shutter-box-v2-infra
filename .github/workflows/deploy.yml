@@ -1,4 +1,4 @@
-name: Deploy ECS App with Nested Stacks
+name: Upload and Deploy CloudFormation
 
 on:
   push:
@@ -23,15 +23,16 @@ jobs:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/GitHubOIDCRole
           aws-region: eu-west-1
 
-      - name: Run GitSync via Docker
+      - name: Upload templates to S3
         run: |
-          docker run --rm \
-            -v "$PWD:/app" \
-            -v "$HOME/.aws:/root/.aws" \
-            -w /app \
-            public.ecr.aws/aws-cloudformation/git-sync:latest \
-            deploy --config image-app-infrastructure/gitsync-config.yml
+          aws s3 cp templates/ s3://shutterbox-cfn-templates/templates/ --recursive --region eu-west-1
 
-      - name: Deploy CloudFormation using GitSync
+      - name: Deploy CloudFormation stack
         run: |
-          gitsync deploy --config image-app-infrastructure/gitsync-config.yml
+          aws cloudformation deploy \
+            --stack-name shutterbox-ecs-app \
+            --template-file templates/main.yml \
+            --capabilities CAPABILITY_NAMED_IAM \
+            --parameter-overrides \
+              ECRImage=${{ secrets.ECR_IMAGE_URI }} \
+            --region eu-west-1
