@@ -93,7 +93,8 @@ Resources:
       Matcher:
         HttpCode: 200-299
   
-    TargetGroup2:
+  # For blue/green codedeploy
+  TargetGroup2:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
       Name: image-app-tg-2
@@ -212,7 +213,7 @@ Outputs:
       Name: ServiceName
 
   TargetGroup1Name:
-    Description: Name of the Target Group (will also be used in Codedeploy TG Pair)
+    Description: Name of the Target Group
     Value: !GetAtt TargetGroup.TargetGroupName
     Export:
       Name: TargetGroup1Name
