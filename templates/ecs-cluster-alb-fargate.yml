@@ -89,9 +89,9 @@ Resources:
       Protocol: HTTP
       VpcId: !Ref VPCId
       TargetType: ip
-      HealthCheckPath: /
+      HealthCheckPath: /actuator/health
       Matcher:
-        HttpCode: 200
+        HttpCode: 200-299
 
 # Load Balancer Listener
   Listener:
@@ -114,6 +114,7 @@ Resources:
       NetworkMode: awsvpc
       RequiresCompatibilities: [FARGATE]
       ExecutionRoleArn: !GetAtt TaskExecutionRole.Arn
+      TaskRoleArn: !GetAtt TaskExecutionRole.Arn
       ContainerDefinitions:
         - Name: image-app
           Image: !Ref ECRImage
