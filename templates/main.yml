@@ -11,7 +11,7 @@ Resources:
   VPCStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://shutterbox-cfn-templates.s3.eu-west-1.amazonaws.com/templates/vpc.yml
+      TemplateURL: https://shutterbox-cf-templates.s3.eu-west-1.amazonaws.com/templates/vpc.yml
       Parameters:
         AppName: image-app
 
@@ -19,7 +19,7 @@ Resources:
     Type: AWS::CloudFormation::Stack
     DependsOn: VPCStack
     Properties:
-      TemplateURL: https://shutterbox-cfn-templates.s3.eu-west-1.amazonaws.com/templates/ecs-cluster-alb-fargate.yml
+      TemplateURL: https://shutterbox-cf-templates.s3.eu-west-1.amazonaws.com/templates/ecs-cluster-alb-fargate.yml
       Parameters:
         VPCId: !GetAtt VPCStack.Outputs.VPCId
         PublicSubnet1: !GetAtt VPCStack.Outputs.PublicSubnet1Id
