@@ -104,7 +104,7 @@ Resources:
       Port: 80
       Protocol: HTTP
 
-#App Log Group
+#App Log Group In CloudWatch
     ImageAppLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
