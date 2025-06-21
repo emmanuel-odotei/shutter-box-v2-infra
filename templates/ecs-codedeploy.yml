@@ -25,15 +25,27 @@ Resources:
   ECSCodeDeployRole:
     Type: AWS::IAM::Role
     Properties:
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: codedeploy.amazonaws.com
-            Action: sts:AssumeRole
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForECS
+        AssumeRolePolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+                - Effect: Allow
+                  Principal:
+                    Service: codedeploy.amazonaws.com
+                  Action: sts:AssumeRole
+        Policies:
+            - PolicyName: CodeDeployECSInlinePolicy
+              PolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    - Effect: Allow
+                      Action:
+                        - ecs:*
+                        - elasticloadbalancing:*
+                        - cloudwatch:*
+                        - sns:*
+                        - s3:*
+                        - lambda:InvokeFunction
+                      Resource: "*"
 
   # Deployment Group
   CodeDeployDeploymentGroup:
