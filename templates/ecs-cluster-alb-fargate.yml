@@ -86,7 +86,7 @@ Resources:
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      Name: image-app-tg
+      Name: ia-tg
       Port: 8082
       Protocol: HTTP
       VpcId: !Ref VPCId
@@ -103,7 +103,7 @@ Resources:
   TargetGroup2:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      Name: image-app-tg-2
+      Name: ia-tg2
       Port: 8082
       Protocol: HTTP
       VpcId: !Ref VPCId
