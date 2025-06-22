@@ -46,6 +46,7 @@ Resources:
                         - sns:*
                         - s3:*
                         - lambda:InvokeFunction
+				        - iam:PassRole
                       Resource: "*"
 
   # Deployment Group
