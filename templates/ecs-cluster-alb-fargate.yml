@@ -212,29 +212,29 @@ Outputs:
 
   S3BucketName:
     Description: S3 bucket for image storage
-    Value: !GetAtt ImageAppS3Bucket.BucketName
+    Value: !Ref ImageAppS3Bucket
 
   ClusterName:
     Description: Name of the ECS Cluster
-    Value: !GetAtt ECSCluster.ClusterName
+    Value: !Ref ECSCluster
     Export:
       Name: ClusterName
 
   ServiceName:
     Description: ECS Service Name
-    Value: !GetAtt ECSService.ServiceName
+    Value: !Ref ECSService
     Export:
       Name: ServiceName
 
   TargetGroup1Name:
     Description: Name of the first target group
-    Value: !GetAtt TargetGroup.TargetGroupName
+    Value: !Ref TargetGroup
     Export:
       Name: TargetGroup1Name
 
   TargetGroup2Name:
     Description: Name of the second target group
-    Value: !GetAtt TargetGroup2.TargetGroupName
+    Value: !Ref TargetGroup2
     Export:
       Name: TargetGroup2Name
 
