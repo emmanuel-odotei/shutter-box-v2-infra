@@ -216,13 +216,13 @@ Outputs:
 
   ClusterName:
     Description: Name of the ECS Cluster
-    Value: !Ref ECSCluster
+    Value: image-app-cluster
     Export:
       Name: ClusterName
 
   ServiceName:
     Description: ECS Service Name
-    Value: !Ref ECSService
+    Value: image-app-service
     Export:
       Name: ServiceName
 

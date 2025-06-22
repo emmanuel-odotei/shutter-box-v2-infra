@@ -35,8 +35,8 @@ Resources:
     Properties:
       TemplateURL: https://shutterbox-cf-templates.s3.eu-west-1.amazonaws.com/templates/ecs-codedeploy.yml
       Parameters:
-        ClusterName: !GetAtt ECSAppStack.Outputs.ClusterName
-        ServiceName: !GetAtt ECSAppStack.Outputs.ServiceName
+        ClusterName: image-app-cluster
+        ServiceName: image-app-service
         TargetGroup1: !GetAtt ECSAppStack.Outputs.TargetGroup1Name
         TargetGroup2: !GetAtt ECSAppStack.Outputs.TargetGroup2Name
         ListenerArn: !GetAtt ECSAppStack.Outputs.ListenerArn
