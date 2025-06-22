@@ -19,12 +19,14 @@ Resources:
   CodeDeployApp:
     Type: AWS::CodeDeploy::Application
     Properties:
+      ApplicationName: image-app
       ComputePlatform: ECS
 
   # CodeDeploy IAM Role
   ECSCodeDeployRole:
     Type: AWS::IAM::Role
     Properties:
+        DeploymentGroupName: image-app-deploy-group
         AssumeRolePolicyDocument:
             Version: "2012-10-17"
             Statement:
