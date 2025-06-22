@@ -1,5 +1,0 @@
-template-file-path: main.yml
-parameters:
-  ECRImage: >-
-    850995534424.dkr.ecr.eu-west-1.amazonaws.com/week5/image-app-repo:emmanuelodotei_imageapp
-tags: {}
