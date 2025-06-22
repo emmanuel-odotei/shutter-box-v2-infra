@@ -30,6 +30,7 @@ Resources:
 
   CodeDeployStack:
     Type: AWS::CloudFormation::Stack
+    DependsOn: ECSAppStack
     Properties:
       TemplateURL: https://shutterbox-cf-templates.s3.eu-west-1.amazonaws.com/templates/ecs-codedeploy.yml
       Parameters:
