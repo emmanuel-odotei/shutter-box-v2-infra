@@ -26,7 +26,6 @@ Resources:
   ECSCodeDeployRole:
     Type: AWS::IAM::Role
     Properties:
-        DeploymentGroupName: image-app-deploy-group
         AssumeRolePolicyDocument:
             Version: "2012-10-17"
             Statement:
