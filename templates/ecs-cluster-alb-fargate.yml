@@ -21,6 +21,7 @@ Resources:
   ImageAppS3Bucket:
     Type: AWS::S3::Bucket
     Properties:
+      BucketName: shutterbox-image-app-s3-bucket
       CorsConfiguration:
         CorsRules:
           - AllowedHeaders: ["*"]

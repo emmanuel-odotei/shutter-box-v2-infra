@@ -73,9 +73,10 @@ Resources:
             ProdTrafficRoute:
               ListenerArns:
                 - !Ref ListenerArn
-      ECSService:
-        ClusterName: !Ref ClusterName
-        ServiceName: !Ref ServiceName
+      ECSServices:
+        - ServiceName: !Ref ServiceName
+          ClusterName: !Ref ClusterName
+            
 
 Outputs:
   CodeDeployAppName:
