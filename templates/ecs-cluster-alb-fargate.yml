@@ -234,7 +234,7 @@ Outputs:
 
   TargetGroup2Name:
     Description: Name of the second target group
-    Value: TargetGroup2.TargetGroupName
+    Value: !GetAtt TargetGroup2.TargetGroupName
     Export:
       Name: TargetGroup2Name
 
