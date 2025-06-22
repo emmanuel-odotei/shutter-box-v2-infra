@@ -86,7 +86,7 @@ Resources:
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      Name: ia-tg
+      Name: imageapp-tg
       Port: 8082
       Protocol: HTTP
       VpcId: !Ref VPCId
@@ -103,7 +103,7 @@ Resources:
   TargetGroup2:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      Name: ia-tg2
+      Name: imageapp-tg2
       Port: 8082
       Protocol: HTTP
       VpcId: !Ref VPCId
@@ -228,13 +228,13 @@ Outputs:
 
   TargetGroup1Name:
     Description: Name of the first target group
-    Value: !Ref TargetGroup
+    Value: !GetAtt TargetGroup.TargetGroupName
     Export:
       Name: TargetGroup1Name
 
   TargetGroup2Name:
     Description: Name of the second target group
-    Value: !Ref TargetGroup2
+    Value: TargetGroup2.TargetGroupName
     Export:
       Name: TargetGroup2Name
 
