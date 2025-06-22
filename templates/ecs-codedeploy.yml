@@ -54,7 +54,7 @@ Resources:
     DependsOn: ECSCodeDeployRole
     Properties:
       ApplicationName: !Ref CodeDeployApp
-      DeploymentGroupName: image-app-deploy-group-1
+      DeploymentGroupName: image-app-deploy-group
       DeploymentConfigName: CodeDeployDefault.ECSAllAtOnce
       ServiceRoleArn: !GetAtt ECSCodeDeployRole.Arn
       DeploymentStyle:
