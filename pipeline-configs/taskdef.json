@@ -1,0 +1,42 @@
+{
+    "family": "shutter-box-task",
+    "executionRoleArn": "arn:aws:iam::850995534424:role/image-app-root-stack-ECSAppStack--TaskExecutionRole-nKrFq7CMWBFA",
+    "taskRoleArn": "arn:aws:iam::850995534424:role/image-app-root-stack-ECSAppStack--TaskExecutionRole-nKrFq7CMWBFA",
+    "networkMode": "awsvpc",
+    "requiresCompatibilities": ["FARGATE"],
+    "cpu": "256",
+    "memory": "512",
+    "containerDefinitions": [
+      {
+        "name": "shutter-box-container",
+        "image": "<IMAGE_URI>",
+        "portMappings": [
+          {
+            "containerPort": 8081,
+            "hostPort": 8081,
+            "protocol": "tcp"
+          }
+        ],
+        "environment": [
+            { "name": "AWS_REGION", "value": "eu-west-1" },
+            { "name": "BUCKET_NAME", "value": "shutter-box-v2-images" }
+        ],
+        "essential": true,
+        "logConfiguration": {
+          "logDriver": "awslogs",
+          "options": {
+            "awslogs-group": "/ecs/shutter-box",
+            "awslogs-region": "eu-west-1",
+            "awslogs-stream-prefix": "ecs"
+          }
+        },
+        "healthCheck": {
+            "command": ["CMD-SHELL", "curl -f http://localhost:8081/actuator/health || exit 1"],
+            "interval": 30,
+            "timeout": 5,
+            "retries": 3,
+            "startPeriod": 10
+          }
+      }
+    ]
+  }

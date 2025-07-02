@@ -1,4 +1,4 @@
-name: Upload and Deploy CloudFormation
+name: Upload and Deploy CloudFormation Templates
 
 on:
   push:
@@ -20,9 +20,18 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/GitHubOIDCRole #Created GithubOIDC role in AWS and allow OIDC in AWS
-          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/GitHubOIDCRole
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Upload templates to S3
         run: |
-          aws s3 cp templates/ s3://shutterbox-cf-templates/templates/ --recursive --region eu-west-1
+          aws s3 cp infra-templates/ s3://${{ secrets.S3_BUCKET_NAME }}/v2-infra-templates/ --recursive --region ${{ secrets.AWS_REGION }}
+      
+      - name: Zip CodeDeploy files
+        run: |
+          cd pipeline-configs
+          zip ../pipeline-configs.zip appspec.json taskdef.json
+  
+      - name: Upload pipeline-configs.zip to S3
+        run: |
+          aws s3 cp pipeline-configs.zip s3://${{ secrets.S3_BUCKET_NAME }}/v2-infra-templates/pipeline-configs.zip --region ${{ secrets.AWS_REGION }}

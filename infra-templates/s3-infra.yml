@@ -1,0 +1,68 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Application S3 Bucket with policy
+
+Parameters:
+  AppName:
+    Type: String
+
+  LabTag:
+    Type: String
+
+  AppTaskRoleArn:
+    Type: String
+    Description: ARN of the Task Role used by ECS Task that needs access to the bucket
+
+Resources:
+  ## S3 Bucket
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub ${AppName}-v2-images
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders: ["*"]
+            AllowedMethods: [GET, PUT, POST]
+            AllowedOrigins: ["*"]
+            MaxAge: 3000
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${AppName}-v2-images
+        - Key: Lab
+          Value: !Ref LabTag
+
+  ## S3 Bucket Policy (App Access)
+  S3BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref S3Bucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowAppRoleAccess
+            Effect: Allow
+            Principal:
+              AWS: !Ref AppTaskRoleArn
+            Action:
+              - "s3:GetObject"
+              - "s3:PutObject"
+              - "s3:DeleteObject"
+              - "s3:ListBucket"
+            Resource:
+              - !Sub "arn:aws:s3:::${S3Bucket}"
+              - !Sub "arn:aws:s3:::${S3Bucket}/*"
+
+Outputs:
+  BucketName:
+    Description: S3 bucket used by application
+    Value: !Ref S3Bucket
+    Export:
+      Name: !Sub ${AppName}-v2-images
+
+  BucketArn:
+    Description: ARN of the bucket
+    Value: !GetAtt S3Bucket.Arn

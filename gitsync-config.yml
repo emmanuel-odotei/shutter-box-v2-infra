@@ -1,9 +1,0 @@
-name: shutterbox-container-image-app
-region: eu-west-1
-s3Bucket: shutterbox-cf-templates
-s3Prefix: templates
-stacks:
-  - name: container-java-root
-    template: templates/main.yml
-    capabilities:
-      - CAPABILITY_NAMED_IAM
