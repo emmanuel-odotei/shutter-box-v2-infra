@@ -114,6 +114,7 @@ Resources:
       StorageEncrypted: true
       BackupRetentionPeriod: 7
       PubliclyAccessible: false
+      EnablePerformanceInsights: true
       PerformanceInsightsRetentionPeriod: 7
       Tags:
         - Key: Name
