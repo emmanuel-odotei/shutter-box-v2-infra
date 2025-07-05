@@ -182,8 +182,8 @@ Resources:
       ServiceName: !Sub "com.amazonaws.${AWS::Region}.s3"
       VpcEndpointType: Gateway
       RouteTableIds:
-        - !Ref IAPrivateRouteTable1
-        - !Ref IAPrivateRouteTable2
+        - !Ref PrivateRouteTable1
+        - !Ref PrivateRouteTable2
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -211,8 +211,8 @@ Resources:
       ServiceName: !Sub com.amazonaws.${AWS::Region}.ecr.api
       VpcEndpointType: Interface
       SubnetIds:
-        - !Ref IAPrivateSubnet1
-        - !Ref IAPrivateSubnet2
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
       PrivateDnsEnabled: true
       SecurityGroupIds:
         - !Ref VPCEndpointSG
@@ -229,8 +229,8 @@ Resources:
       ServiceName: !Sub com.amazonaws.${AWS::Region}.ecr.dkr
       VpcEndpointType: Interface
       SubnetIds:
-        - !Ref IAPrivateSubnet1
-        - !Ref IAPrivateSubnet2
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
       PrivateDnsEnabled: true
       SecurityGroupIds:
         - !Ref VPCEndpointSG
@@ -247,8 +247,8 @@ Resources:
       ServiceName: !Sub com.amazonaws.${AWS::Region}.logs
       VpcEndpointType: Interface
       SubnetIds:
-        - !Ref IAPrivateSubnet1
-        - !Ref IAPrivateSubnet2
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
       PrivateDnsEnabled: true
       SecurityGroupIds:
         - !Ref VPCEndpointSG
