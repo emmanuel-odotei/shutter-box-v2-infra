@@ -354,13 +354,13 @@ Outputs:
     Export:
       Name: !Sub ${AppName}-ecs-service
 
-  TargetGroup1Name:
+  BlueTargetGroupName:
     Description: Name of the first target group
     Value: !GetAtt TargetGroup.TargetGroupName
     Export:
       Name: BlueTargetGroupName
 
-  TargetGroup2Name:
+  GreenTargetGroupName:
     Description: Name of the second target group
     Value: !GetAtt TargetGroup2.TargetGroupName
     Export:
@@ -372,7 +372,7 @@ Outputs:
     Export:
       Name: ALBListenerArn
 
-  TaskExecutionRoleArn:
+  TaskExecRoleArn:
     Description: ARN of the TaskExecutionRole
     Value: !Ref TaskExecutionRole
     Export:
