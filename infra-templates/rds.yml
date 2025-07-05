@@ -141,12 +141,8 @@ Resources:
     DependsOn: RDSInstance
     Properties:
       Name: !Sub /${AppName}/db/password
-      Type: SecureString
-      Value: !Join
-        - ''
-        - - '{{resolve:secretsmanager:'
-          - !Ref DBSecret
-          - '::password}}'
+      Type: "SecureString"
+      Value: !Sub "{{resolve:secretsmanager:${DBSecret}::password}}"
       Description: RDS db password (from Secrets Manager)
       Tags:
         - Key: App
@@ -174,7 +170,7 @@ Resources:
     Properties:
       Name: !Sub /${AppName}/db/name
       Type: String
-      Value: shutterboxdb
+      Value: !Sub shutterboxdb
       Description: RDS db name
       Tags:
         - Key: App
