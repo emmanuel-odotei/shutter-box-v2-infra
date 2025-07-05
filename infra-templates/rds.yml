@@ -93,7 +93,7 @@ Resources:
     Properties:
       DBInstanceIdentifier: !Sub ${AppName}-db
       Engine: postgres
-      EngineVersion: 15.5
+      EngineVersion: 15.8
       DBInstanceClass: db.t3.micro
       MultiAZ: true
       DBName: !Sub ${AppName}-db
