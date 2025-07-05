@@ -350,7 +350,7 @@ Outputs:
 
   ServiceName:
     Description: ECS Service Name
-    Value: !Ref ECSService
+    Value: !Sub ${AppName}-ecs-service
     Export:
       Name: !Sub ${AppName}-ecs-service
 
