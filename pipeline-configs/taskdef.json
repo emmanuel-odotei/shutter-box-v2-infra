@@ -9,7 +9,7 @@
     "containerDefinitions": [
       {
         "name": "shutter-box-container",
-        "image": "<IMAGE_URI>",
+        "image": "850995534424.dkr.ecr.eu-west-1.amazonaws.com/shutter-box-repo:latest",
         "portMappings": [
           {
             "containerPort": 8081,
