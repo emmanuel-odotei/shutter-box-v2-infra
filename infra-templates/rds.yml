@@ -123,13 +123,13 @@ Resources:
           Value: !Ref LabTag
 
   DBUsernameParam:
-  Type: AWS::SSM::Parameter
-  DependsOn: RDSInstance
-  Properties:
-    Name: !Sub /${AppName}/db/username
-    Type: String
-    Value: sbdbadmin
-    Description: RDS db username
+    Type: AWS::SSM::Parameter
+    DependsOn: RDSInstance
+    Properties:
+      Name: !Sub /${AppName}/db/username
+      Type: String
+      Value: sbdbadmin
+      Description: RDS db username
 
   DBPasswordParam:
     Type: AWS::SSM::Parameter
