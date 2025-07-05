@@ -60,6 +60,25 @@ Resources:
         - Key: Lab
           Value: !Ref LabTag
 
+## IAM Policy for ECS Tasks to access SSM
+  TaskSSMPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub ${AppName}-ecs-ssm-policy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - ssm:GetParameter
+              - ssm:GetParameters
+              - ssm:GetParametersByPath
+            Resource:
+              - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AppName}/db/*
+      Tags:
+        - Key: App
+          Value: !Ref AppName
+
 # ECS Task Execution Role
   TaskExecutionRole:
     Type: AWS::IAM::Role
@@ -78,6 +97,23 @@ Resources:
           Value: !Sub ${AppName}-task-exec-role
         - Key: Lab
           Value: !Ref LabTag
+
+# Application Task Role 
+AppTaskRole:
+  Type: AWS::IAM::Role
+  Properties:
+    AssumeRolePolicyDocument:
+      Statement:
+        - Effect: Allow
+          Principal:
+            Service: ecs-tasks.amazonaws.com
+          Action: sts:AssumeRole
+    ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/AmazonS3FullAccess
+      - !Ref TaskSSMPolicy
+    Tags:
+      - Key: Name
+        Value: !Sub ${AppName}-task-role
 
 # Elastic Container Service (ECS) Cluster
   ECSCluster:
@@ -229,7 +265,7 @@ Resources:
       NetworkMode: awsvpc
       RequiresCompatibilities: [FARGATE]
       ExecutionRoleArn: !GetAtt TaskExecutionRole.Arn
-      TaskRoleArn: !GetAtt TaskExecutionRole.Arn
+      TaskRoleArn: !GetAtt AppTaskRole.Arn
       ContainerDefinitions:
         - Name: !Sub ${AppName}-container
           Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${AppName}-repo:latest
@@ -242,6 +278,17 @@ Resources:
               Value: !Ref "AWS::Region"
             - Name: BUCKET_NAME
               Value: !Ref S3BucketName
+            - Name: DB_HOST
+              Value: !Sub "{{resolve:ssm:/${AppName}/db/host:1}}"
+            - Name: DB_PORT
+              Value: !Sub "{{resolve:ssm:/${AppName}/db/port:1}}"
+            - Name: DB_NAME
+              Value: !Sub "{{resolve:ssm:/${AppName}/db/name:1}}"
+          Secrets:
+            - Name: DB_USERNAME
+              ValueFrom: !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AppName}/db/username
+            - Name: DB_PASSWORD
+              ValueFrom: !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AppName}/db/password
           LogConfiguration:
             LogDriver: awslogs
             Options:

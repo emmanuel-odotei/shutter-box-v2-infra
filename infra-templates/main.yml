@@ -73,6 +73,19 @@ Resources:
         CodeDeployApplication: !GetAtt CodeDeployStack.Outputs.CodeDeployAppName
         CodeDeployDeploymentGroup: !GetAtt CodeDeployStack.Outputs.CodeDeployDeploymentGroupName
 
+  RDSStack:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: VPCStack
+    Properties:
+      TemplateURL: !Sub "${TemplateS3BaseURL}/rds-postgres.yml"
+      Parameters:
+        AppName: !Ref AppName
+        LabTag: !Ref LabTag
+        VPCId: !GetAtt VPCStack.Outputs.VPCId
+        PrivateSubnet1: !GetAtt VPCStack.Outputs.PrivateSubnet1Id
+        PrivateSubnet2: !GetAtt VPCStack.Outputs.PrivateSubnet2Id
+        VPCEndpointSG: !GetAtt VPCStack.Outputs.VPCEndpointSecurityGroup
+
 Outputs:
   LoadBalancerDNS:
     Description: ALB DNS to access app

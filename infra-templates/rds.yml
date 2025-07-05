@@ -122,7 +122,7 @@ Resources:
     DependsOn: RDSInstance
     Properties:
       Name: !Sub /${AppName}/db/port
-      Type: SecureString
+      Type: String
       Value: !GetAtt RDSInstance.Endpoint.Port
       Description: RDS db port
       Tags:
@@ -159,7 +159,7 @@ Resources:
       EngineVersion: 15.5
       DBInstanceClass: db.t3.micro
       MultiAZ: true
-      DBName: ${AppName}-db
+      DBName: !Sub ${AppName}-db
       MasterUsername: !Sub '{{resolve:secretsmanager:${DBSecret}::username}}'
       MasterUserPassword: !Sub '{{resolve:secretsmanager:${DBSecret}::password}}'
       VPCSecurityGroups:
@@ -233,25 +233,6 @@ Resources:
       PrivateDnsEnabled: true
       SecurityGroupIds:
         - !Ref RdsEndpointSecurityGroup
-
-  ## IAM Policy for ECS Tasks to access SSM
-  TaskSSMPolicy:
-    Type: AWS::IAM::ManagedPolicy
-    Properties:
-      ManagedPolicyName: !Sub ${AppName}-ecs-ssm-policy
-      PolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Action:
-              - ssm:GetParameter
-              - ssm:GetParameters
-              - ssm:GetParametersByPath
-            Resource:
-              - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AppName}/db/*
-      Tags:
-        - Key: App
-          Value: !Ref AppName
 
 Outputs:
   RDSInstanceEndpoint:
