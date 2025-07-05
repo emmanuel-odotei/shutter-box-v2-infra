@@ -1,0 +1,282 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: RDS PostgreSQL with Multi-AZ, VPC Endpoints, and SSM Secrets Integration
+
+Parameters:
+  AppName:
+    Type: String
+
+  LabTag:
+    Type: String
+
+  VPCId:
+    Type: AWS::EC2::VPC::Id
+
+  PrivateSubnet1:
+    Type: AWS::EC2::Subnet::Id
+
+  PrivateSubnet2:
+    Type: AWS::EC2::Subnet::Id
+
+  VPCEndpointSG:
+    Description: 'Security Group for VPC endpoints'
+    Type: AWS::EC2::SecurityGroup::Id
+
+Resources:
+  ## Security Group for RDS
+  RdsSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for RDS PostgreSQL
+      VpcId: !Ref VPCId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          SourceSecurityGroupId: !Ref VPCEndpointSG
+      Tags:
+        - Key: Name
+          Value: !Sub ${AppName}-rds-sg
+        - Key: Lab
+          Value: !Ref LabTag
+
+  ## Secrets Manager Secret
+  DBSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: !Sub ${AppName}-db-secret
+      Description: RDS PostgreSQL credentials
+      GenerateSecretString:
+        SecretStringTemplate: !Sub '{"username": "sbdbadmin"}'
+        GenerateStringKey: password
+        PasswordLength: 8
+        ExcludeCharacters: '"@/\'
+      Tags:
+        - Key: App
+          Value: !Ref AppName
+        - Key: Lab
+          Value: !Ref LabTag
+
+  ## SSM Parameter for DB username
+  DBUsernameParam:
+    Type: AWS::SSM::Parameter
+    DependsOn: RDSInstance
+    Properties:
+      Name: !Sub /${AppName}/db/username
+      Type: String
+      Value: sbdbadmin
+      Description: RDS db username
+      Tags:
+        - Key: App
+          Value: !Ref AppName
+        - Key: Lab
+          Value: !Ref LabTag
+
+  ## SSM Parameter for DB password
+  DBPasswordParam:
+    Type: AWS::SSM::Parameter
+    DependsOn: RDSInstance
+    Properties:
+      Name: !Sub /${AppName}/db/password
+      Type: SecureString
+      Value: !Sub '{{resolve:secretsmanager:${DBSecret}::password}}'
+      Description: RDS db password (from Secrets Manager)
+      Tags:
+        - Key: App
+          Value: !Ref AppName
+        - Key: Lab
+          Value: !Ref LabTag
+
+  ## SSM Parameter for DB host
+  DBHostParam:
+    Type: AWS::SSM::Parameter
+    DependsOn: RDSInstance
+    Properties:
+      Name: !Sub /${AppName}/db/host
+      Type: String
+      Value: !GetAtt RDSInstance.Endpoint.Address
+      Description: RDS db host
+      Tags:
+        - Key: App
+          Value: !Ref AppName
+        - Key: Lab
+          Value: !Ref LabTag
+
+  ## SSM Parameter for DB name
+  DBNameParam:
+    Type: AWS::SSM::Parameter
+    DependsOn: RDSInstance
+    Properties:
+      Name: !Sub /${AppName}/db/name
+      Type: String
+      Value: !Sub ${AppName}-db
+      Description: RDS db name
+      Tags:
+        - Key: App
+          Value: !Ref AppName
+        - Key: Lab
+          Value: !Ref LabTag
+
+  ## SSM Parameter for DB port
+  DBPortParam:
+    Type: AWS::SSM::Parameter
+    DependsOn: RDSInstance
+    Properties:
+      Name: !Sub /${AppName}/db/port
+      Type: SecureString
+      Value: !GetAtt RDSInstance.Endpoint.Port
+      Description: RDS db port
+      Tags:
+        - Key: App
+          Value: !Ref AppName
+        - Key: Lab
+          Value: !Ref LabTag
+
+  ## DB Subnet Group
+  DBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: Subnet group for RDS
+      SubnetIds:
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
+      Tags:
+        - Key: Name
+          Value: !Sub ${AppName}-db-subnet-group
+        - Key: Lab
+          Value: !Ref LabTag
+
+  ## RDS PostgreSQL Instance
+  RDSInstance:
+    Type: AWS::RDS::DBInstance
+    DeletionPolicy: Delete
+    DependsOn: 
+      - RdsEndpointSecurityGroup
+      - DBSubnetGroup
+      - DBSecret
+    Properties:
+      DBInstanceIdentifier: !Sub ${AppName}-db
+      Engine: postgres
+      EngineVersion: 15.5
+      DBInstanceClass: db.t3.micro
+      MultiAZ: true
+      DBName: ${AppName}-db
+      MasterUsername: !Sub '{{resolve:secretsmanager:${DBSecret}::username}}'
+      MasterUserPassword: !Sub '{{resolve:secretsmanager:${DBSecret}::password}}'
+      VPCSecurityGroups:
+        - !Ref RdsSecurityGroup
+      DBSubnetGroupName: !Ref DBSubnetGroup
+      AllocatedStorage: 20
+      StorageEncrypted: true
+      BackupRetentionPeriod: 7
+      PubliclyAccessible: false
+      PerformanceInsightsRetentionPeriod: 7
+      Tags:
+        - Key: Name
+          Value: !Sub ${AppName}-rds-instance
+        - Key: Lab
+          Value: !Ref LabTag
+
+  ## VPC Endpoint Security Group for ECS ↔︎ RDS & SSM
+  RdsEndpointSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: SG for VPC Interface Endpoints (SSM, RDS Data)
+      VpcId: !Ref VPCId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          SourceSecurityGroupId: !Ref VPCEndpointSG
+      Tags:
+        - Key: Name
+          Value: !Sub ${AppName}-vpce-rds-sg
+        - Key: Lab
+          Value: !Ref LabTag
+
+  ## RDS VPC Interface Endpoints
+  RdsEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      VpcId: !Ref VPCId
+      ServiceName: !Sub com.amazonaws.${AWS::Region}.rds
+      VpcEndpointType: Interface
+      SubnetIds:
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
+      PrivateDnsEnabled: true
+      SecurityGroupIds:
+        - !Ref RdsEndpointSecurityGroup
+
+  RdsDataEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      VpcId: !Ref VPCId
+      ServiceName: !Sub com.amazonaws.${AWS::Region}.rds-data
+      VpcEndpointType: Interface
+      SubnetIds:
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
+      PrivateDnsEnabled: true
+      SecurityGroupIds:
+        - !Ref RdsEndpointSecurityGroup
+
+  ## SSM Endpoint for Parameter Store access
+  SSMEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      VpcId: !Ref VPCId
+      ServiceName: !Sub com.amazonaws.${AWS::Region}.ssm
+      VpcEndpointType: Interface
+      SubnetIds:
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
+      PrivateDnsEnabled: true
+      SecurityGroupIds:
+        - !Ref RdsEndpointSecurityGroup
+
+  ## IAM Policy for ECS Tasks to access SSM
+  TaskSSMPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub ${AppName}-ecs-ssm-policy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - ssm:GetParameter
+              - ssm:GetParameters
+              - ssm:GetParametersByPath
+            Resource:
+              - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AppName}/db/*
+      Tags:
+        - Key: App
+          Value: !Ref AppName
+
+Outputs:
+  RDSInstanceEndpoint:
+    Description: RDS PostgreSQL endpoint
+    Value: !GetAtt RDSInstance.Endpoint.Address
+    Export:
+      Name: !Sub ${AppName}-rds-endpoint
+
+  RdsSecurityGroupId:
+    Description: Security group ID for RDS
+    Value: !Ref RdsSecurityGroup
+    Export:
+      Name: !Sub ${AppName}-rds-sg
+
+  DBUsernameParamExport:
+    Value: !Ref DBUsernameParam
+    Export:
+      Name: !Sub ${AppName}-db-username-param
+
+  DBPasswordParamExport:
+    Value: !Ref DBPasswordParam
+    Export:
+      Name: !Sub ${AppName}-db-password-param
+
+  RdsVPCEndpointSG:
+    Value: !Ref RdsEndpointSecurityGroup
+    Export:
+      Name: !Sub ${AppName}-vpce-rds-sg
