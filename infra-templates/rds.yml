@@ -130,25 +130,15 @@ Resources:
       Type: String
       Value: sbdbadmin
       Description: RDS db username
-      Tags:
-        - Key: App
-          Value: !Ref AppName
-        - Key: Lab
-          Value: !Ref LabTag
 
   DBPasswordParam:
     Type: AWS::SSM::Parameter
     DependsOn: RDSInstance
     Properties:
       Name: !Sub /${AppName}/db/password
-      Type: "SecureString"
+      Type: SecureString
       Value: !Sub "{{resolve:secretsmanager:${DBSecret}::password}}"
       Description: RDS db password (from Secrets Manager)
-      Tags:
-        - Key: App
-          Value: !Ref AppName
-        - Key: Lab
-          Value: !Ref LabTag
 
   DBHostParam:
     Type: AWS::SSM::Parameter
@@ -158,11 +148,6 @@ Resources:
       Type: String
       Value: !GetAtt RDSInstance.Endpoint.Address
       Description: RDS db host
-      Tags:
-        - Key: App
-          Value: !Ref AppName
-        - Key: Lab
-          Value: !Ref LabTag
 
   DBNameParam:
     Type: AWS::SSM::Parameter
@@ -170,13 +155,8 @@ Resources:
     Properties:
       Name: !Sub /${AppName}/db/name
       Type: String
-      Value: !Sub shutterboxdb
+      Value: shutterboxdb
       Description: RDS db name
-      Tags:
-        - Key: App
-          Value: !Ref AppName
-        - Key: Lab
-          Value: !Ref LabTag
 
   DBPortParam:
     Type: AWS::SSM::Parameter
@@ -186,11 +166,6 @@ Resources:
       Type: String
       Value: !GetAtt RDSInstance.Endpoint.Port
       Description: RDS db port
-      Tags:
-        - Key: App
-          Value: !Ref AppName
-        - Key: Lab
-          Value: !Ref LabTag
 
   RdsEndpoint:
     Type: AWS::EC2::VPCEndpoint
