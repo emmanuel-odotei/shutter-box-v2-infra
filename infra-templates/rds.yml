@@ -96,7 +96,7 @@ Resources:
       EngineVersion: 15.8
       DBInstanceClass: db.t3.micro
       MultiAZ: true
-      DBName: !Sub ${AppName}-db
+      DBName: shutterboxdb
       MasterUsername: !Join
         - ''
         - - '{{resolve:secretsmanager:'
@@ -173,7 +173,7 @@ Resources:
   #   Properties:
   #     Name: !Sub /${AppName}/db/name
   #     Type: String
-  #     Value: !Sub ${AppName}-db
+  #     Value: shutterboxdb
   #     Description: RDS db name
   #     Tags:
   #       - Key: App
