@@ -33,7 +33,7 @@ Resources:
 
   ECSAppStack:
     Type: AWS::CloudFormation::Stack
-    DependsOn: VPCStack
+    DependsOn: RDSStack
     Properties:
       TemplateURL: !Sub "${TemplateS3BaseURL}/ecs-cluster-alb-fargate.yml"
       Parameters:
