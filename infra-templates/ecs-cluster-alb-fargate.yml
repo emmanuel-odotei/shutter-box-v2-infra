@@ -297,11 +297,7 @@ Resources:
     Properties:
       MaxCapacity: 5
       MinCapacity: 2
-      ResourceId:
-        Fn::Sub:
-          - service/${ClusterName}/${ServiceName}
-          - ClusterName: !Ref ECSCluster
-            ServiceName: !Ref ECSService
+      ResourceId: !Sub service/${AppName}-ecs-cluster/${AppName}-ecs-service
       RoleARN: !GetAtt ECSAutoScalingRole.Arn
       ScalableDimension: ecs:service:DesiredCount
       ServiceNamespace: ecs
