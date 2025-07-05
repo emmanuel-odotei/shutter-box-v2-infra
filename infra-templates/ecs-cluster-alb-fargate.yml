@@ -75,9 +75,6 @@ Resources:
               - ssm:GetParametersByPath
             Resource:
               - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AppName}/db/*
-      Tags:
-        - Key: App
-          Value: !Ref AppName
 
 # ECS Task Execution Role
   TaskExecutionRole:
