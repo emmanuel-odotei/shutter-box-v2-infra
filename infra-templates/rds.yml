@@ -136,7 +136,7 @@ Resources:
     DependsOn: RDSInstance
     Properties:
       Name: !Sub /${AppName}/db/password
-      Type: SecureString
+      Type: "SecureString"
       Value: !Sub "{{resolve:secretsmanager:${DBSecret}::password}}"
       Description: RDS db password (from Secrets Manager)
 
