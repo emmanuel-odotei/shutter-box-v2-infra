@@ -339,7 +339,7 @@ Resources:
               - !Sub "arn:aws:s3:::${S3BucketName}/*"
 
 Outputs:
-  LoadBalancerDNS:
+  AppLoadBalancerDNS:
     Description: ALB DNS to access app
     Value: !GetAtt LoadBalancer.DNSName
 
@@ -359,22 +359,22 @@ Outputs:
     Description: Name of the first target group
     Value: !GetAtt TargetGroup.TargetGroupName
     Export:
-      Name: TargetGroup1Name
+      Name: BlueTargetGroupName
 
   TargetGroup2Name:
     Description: Name of the second target group
     Value: !GetAtt TargetGroup2.TargetGroupName
     Export:
-      Name: TargetGroup2Name
+      Name: GreenTargetGroupName
 
-  ListenerArn:
+  ALBListenerArn:
     Description: ARN of the Load Balancer Listener
     Value: !Ref Listener
     Export:
-      Name: ListenerArn
+      Name: ALBListenerArn
 
   TaskExecutionRoleArn:
     Description: ARN of the TaskExecutionRole
     Value: !Ref TaskExecutionRole
     Export:
-      Name: TaskExecutionRoleArn 
+      Name: TaskExecRoleArn 

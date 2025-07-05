@@ -56,9 +56,9 @@ Resources:
       Parameters:
         ClusterName: !GetAtt ECSAppStack.Outputs.ClusterName
         ServiceName: !GetAtt ECSAppStack.Outputs.ServiceName
-        TargetGroup1: !GetAtt ECSAppStack.Outputs.TargetGroup1Name
-        TargetGroup2: !GetAtt ECSAppStack.Outputs.TargetGroup2Name
-        ListenerArn: !GetAtt ECSAppStack.Outputs.ListenerArn
+        TargetGroup1: !GetAtt ECSAppStack.Outputs.BlueTargetGroupName
+        TargetGroup2: !GetAtt ECSAppStack.Outputs.GreenTargetGroupName
+        ListenerArn: !GetAtt ECSAppStack.Outputs.ALBListenerArn
         AppName: !Ref AppName
         LabTag: !Ref LabTag
 
@@ -76,7 +76,7 @@ Resources:
 Outputs:
   LoadBalancerDNS:
     Description: ALB DNS to access app
-    Value: !GetAtt ECSAppStack.Outputs.LoadBalancerDNS
+    Value: !GetAtt ECSAppStack.Outputs.AppLoadBalancerDNS
 
   S3BucketName:
     Description: S3 bucket used by the app
