@@ -247,15 +247,15 @@ Outputs:
     Export:
       Name: !Sub ${AppName}-rds-sg
 
-  DBUsernameParamExport:
-    Value: !Ref DBUsernameParam
-    Export:
-      Name: !Sub ${AppName}-db-username-param
+  # DBUsernameParamExport:
+  #   Value: !Ref DBUsernameParam
+  #   Export:
+  #     Name: !Sub ${AppName}-db-username-param
 
-  DBPasswordParamExport:
-    Value: !Ref DBPasswordParam
-    Export:
-      Name: !Sub ${AppName}-db-password-param
+  # DBPasswordParamExport:
+  #   Value: !Ref DBPasswordParam
+  #   Export:
+  #     Name: !Sub ${AppName}-db-password-param
 
   RdsVPCEndpointSG:
     Value: !Ref RdsEndpointSecurityGroup
