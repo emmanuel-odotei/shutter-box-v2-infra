@@ -12,9 +12,6 @@ Parameters:
     Description: 'S3 Base URL where nested templates are hosted'
     Type: String
     Default: 'https://shutterbox-cf-templates.s3.eu-west-1.amazonaws.com/v2-infra-templates'
-  ECRImage:
-    Type: String
-    Description: Full ECR image URI
 
 Resources:
   S3Stack:
@@ -24,7 +21,6 @@ Resources:
       Parameters:
         AppName: !Ref AppName
         LabTag: !Ref LabTag
-        AppTaskRoleArn: !GetAtt ECSAppStack.Outputs.TaskExecutionRoleArn
 
   VPCStack:
     Type: AWS::CloudFormation::Stack

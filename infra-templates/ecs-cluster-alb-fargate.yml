@@ -317,6 +317,27 @@ Resources:
         ScaleInCooldown: 60
         ScaleOutCooldown: 60
 
+# S3 Bucket Policy to allow ECS Task Role access
+  S3AccessPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref S3BucketName
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowECSAppTaskAccess
+            Effect: Allow
+            Principal:
+              AWS: !GetAtt TaskExecutionRole.Arn
+            Action:
+              - "s3:GetObject"
+              - "s3:PutObject"
+              - "s3:DeleteObject"
+              - "s3:ListBucket"
+            Resource:
+              - !Sub "arn:aws:s3:::${S3BucketName}"
+              - !Sub "arn:aws:s3:::${S3BucketName}/*"
+
 Outputs:
   LoadBalancerDNS:
     Description: ALB DNS to access app
