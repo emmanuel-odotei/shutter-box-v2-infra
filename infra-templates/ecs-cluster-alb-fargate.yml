@@ -249,13 +249,13 @@ Resources:
               awslogs-region: !Ref "AWS::Region"
               awslogs-stream-prefix: ecs
           HealthCheck:
-          Command:
-            - CMD-SHELL
-            - curl -f http://localhost:8081/actuator/health || exit 1
-          Interval: 30
-          Timeout: 30
-          Retries: 3
-          StartPeriod: 10
+            Command:
+              - CMD-SHELL
+              - curl -f http://localhost:8081/actuator/health || exit 1
+            Interval: 30
+            Timeout: 30
+            Retries: 3
+            StartPeriod: 10
       Tags:
         - Key: Name
           Value: !Sub ${AppName}-task-definition
