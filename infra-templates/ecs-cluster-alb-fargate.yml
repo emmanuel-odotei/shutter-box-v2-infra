@@ -99,21 +99,21 @@ Resources:
           Value: !Ref LabTag
 
 # Application Task Role 
-AppTaskRole:
-  Type: AWS::IAM::Role
-  Properties:
-    AssumeRolePolicyDocument:
-      Statement:
-        - Effect: Allow
-          Principal:
-            Service: ecs-tasks.amazonaws.com
-          Action: sts:AssumeRole
-    ManagedPolicyArns:
-      - arn:aws:iam::aws:policy/AmazonS3FullAccess
-      - !Ref TaskSSMPolicy
-    Tags:
-      - Key: Name
-        Value: !Sub ${AppName}-task-role
+  AppTaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+        - !Ref TaskSSMPolicy
+      Tags:
+        - Key: Name
+          Value: !Sub ${AppName}-task-role
 
 # Elastic Container Service (ECS) Cluster
   ECSCluster:
