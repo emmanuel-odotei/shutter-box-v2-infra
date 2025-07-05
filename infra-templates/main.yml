@@ -77,7 +77,7 @@ Resources:
     Type: AWS::CloudFormation::Stack
     DependsOn: VPCStack
     Properties:
-      TemplateURL: !Sub "${TemplateS3BaseURL}/rds-postgres.yml"
+      TemplateURL: !Sub "${TemplateS3BaseURL}/rds.yml"
       Parameters:
         AppName: !Ref AppName
         LabTag: !Ref LabTag
