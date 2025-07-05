@@ -70,8 +70,8 @@ Resources:
       Parameters:
         AppName: !Ref AppName
         LabTag: !Ref LabTag
-        CodeDeployApplication: !GetAtt CodeDeployStack.Outputs.CodeDeployApplication
-        CodeDeployDeploymentGroup: !GetAtt CodeDeployStack.Outputs.CodeDeployDeploymentGroup
+        CodeDeployApplication: !GetAtt CodeDeployStack.Outputs.CodeDeployAppName
+        CodeDeployDeploymentGroup: !GetAtt CodeDeployStack.Outputs.CodeDeployDeploymentGroupName
 
 Outputs:
   LoadBalancerDNS:
