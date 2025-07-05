@@ -125,6 +125,11 @@ Resources:
           FromPort: 8081
           ToPort: 8081
           SourceSecurityGroupId: !Ref ALBSecurityGroup
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          FromPort: 0
+          ToPort: 0
+          CidrIp: 0.0.0.0/0
       Tags:
         - Key: Name
           Value: !Sub ${AppName}-ecs-sg
@@ -165,7 +170,7 @@ Resources:
         HttpCode: 200-299
       Tags:
         - Key: Name
-          Value: !Sub ${AppName}-blue-tg
+          Value: !Sub ${AppName}-btg
         - Key: Lab
           Value: !Ref LabTag
   
@@ -187,7 +192,7 @@ Resources:
         HttpCode: 200-299
       Tags:
         - Key: Name
-          Value: !Sub ${AppName}-green-tg
+          Value: !Sub ${AppName}-gtg
         - Key: Lab
           Value: !Ref LabTag
 
@@ -201,11 +206,6 @@ Resources:
       LoadBalancerArn: !Ref LoadBalancer
       Port: 80
       Protocol: HTTP
-      Tags:
-        - Key: Name
-          Value: !Sub ${AppName}-alb-listener
-        - Key: Lab
-          Value: !Ref LabTag
 
   CloudWatchLogGroup:
     Type: AWS::Logs::LogGroup
@@ -248,14 +248,14 @@ Resources:
               awslogs-group: !Ref CloudWatchLogGroup
               awslogs-region: !Ref "AWS::Region"
               awslogs-stream-prefix: ecs
-          HealthCheck:
-            Command:
-              - CMD-SHELL
-              - curl -f http://localhost:8081/actuator/health || exit 1
-            Interval: 30
-            Timeout: 30
-            Retries: 3
-            StartPeriod: 10
+          # HealthCheck:
+          #   Command:
+          #     - CMD-SHELL
+          #     - curl -f http://localhost:8081/actuator/health || exit 1
+          #   Interval: 30
+          #   Timeout: 30
+          #   Retries: 3
+          #   StartPeriod: 10
       Tags:
         - Key: Name
           Value: !Sub ${AppName}-task-definition
