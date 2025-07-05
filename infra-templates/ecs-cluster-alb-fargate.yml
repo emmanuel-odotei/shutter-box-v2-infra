@@ -270,7 +270,7 @@ Resources:
       ServiceName: !Sub ${AppName}-ecs-service
       Cluster: !Ref ECSCluster
       LaunchType: FARGATE
-      DesiredCount: 2
+      DesiredCount: 0
       DeploymentController:
         Type: CODE_DEPLOY
       NetworkConfiguration:
@@ -296,7 +296,7 @@ Resources:
       - ECSCluster
       - ECSService
     Properties:
-      MaxCapacity: 4
+      MaxCapacity: 5
       MinCapacity: 2
       ResourceId: !Sub service/${AppName}-cluster/${AppName}-ecs-service
       RoleARN: !GetAtt ECSAutoScalingRole.Arn
