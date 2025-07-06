@@ -23,15 +23,16 @@ jobs:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/GitHubOIDCRole
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Upload templates to S3
+      - name: Upload CloudFormation templates to S3
         run: |
           aws s3 cp infra-templates/ s3://${{ secrets.S3_BUCKET_NAME }}/v2-infra-templates/ --recursive --region ${{ secrets.AWS_REGION }}
-      
-      - name: Zip CodeDeploy files
+
+      - name: Package CodeDeploy artifacts
         run: |
           cd pipeline-configs
-          zip ../pipeline-configs.zip appspec.json taskdef.json
-  
-      - name: Upload pipeline-configs.zip to S3
+          zip -r ../pipeline-configs.zip appspec.yaml taskdef.json
+          cd ..
+
+      - name: Upload CodeDeploy artifacts to S3
         run: |
           aws s3 cp pipeline-configs.zip s3://${{ secrets.S3_BUCKET_NAME }}/v2-infra-templates/pipeline-configs.zip --region ${{ secrets.AWS_REGION }}
