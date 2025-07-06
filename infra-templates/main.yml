@@ -4,7 +4,7 @@ Description: Root Stack for ECS Java ShutterBox App with S3, Auto Scaling, ALB, 
 Parameters:
   AppName:
     Type: String
-    Default: shutter-box-v2
+    Default: shutter-box
   LabTag:
     Type: String
     Default: week_6_lab
