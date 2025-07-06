@@ -3,5 +3,5 @@ parameters:
   LabTag: week_6_lab
   TemplateS3BaseURL: >-
     https://shutterbox-cf-templates.s3.eu-west-1.amazonaws.com/v2-infra-templates
-  AppName: shutter-box-v2
+  AppName: shutter-box
 tags: {}
