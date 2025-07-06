@@ -371,7 +371,7 @@ Resources:
           - Sid: AllowECSAppTaskAccess
             Effect: Allow
             Principal:
-              AWS: !GetAtt TaskExecutionRole.Arn
+              AWS: !GetAtt AppTaskRole.Arn
             Action:
               - "s3:GetObject"
               - "s3:PutObject"

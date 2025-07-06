@@ -1,7 +1,7 @@
 {
     "family": "shutter-box-task",
-    "executionRoleArn": "arn:aws:iam::850995534424:role/image-app-root-stack-ECSAppStack--TaskExecutionRole-nKrFq7CMWBFA",
-    "taskRoleArn": "arn:aws:iam::850995534424:role/image-app-root-stack-ECSAppStack--TaskExecutionRole-nKrFq7CMWBFA",
+    "executionRoleArn": "arn:aws:iam::850995534424:role/shutter-box-infra-ECSAppStack-2FY-TaskExecutionRole-okCnNGppbO7M",
+    "taskRoleArn": "arn:aws:iam::850995534424:role/shutter-box-infra-ECSAppStack-2FY-TaskExecutionRole-okCnNGppbO7M",
     "networkMode": "awsvpc",
     "requiresCompatibilities": ["FARGATE"],
     "cpu": "256",
@@ -36,7 +36,7 @@
             "timeout": 5,
             "retries": 3,
             "startPeriod": 10
-          }
+        }
       }
     ]
   }
