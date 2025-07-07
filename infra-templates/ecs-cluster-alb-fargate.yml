@@ -101,6 +101,18 @@ Resources:
                   - ssm:GetParametersByPath
                 Resource:
                   - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AppName}/db/*
+
+        - PolicyName: AllowECRAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ecr:GetAuthorizationToken
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:BatchGetImage
+                Resource: "*"
       Tags:
         - Key: Name
           Value: !Sub ${AppName}-task-exec-role
@@ -171,6 +183,10 @@ Resources:
           ToPort: 8081
           SourceSecurityGroupId: !Ref ALBSecurityGroup
       SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          DestinationSecurityGroupId: !Ref VPCEndpointSG
         - IpProtocol: -1
           FromPort: 0
           ToPort: 0
