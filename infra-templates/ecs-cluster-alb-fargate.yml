@@ -100,7 +100,7 @@ Resources:
                   - ssm:GetParameter
                   - ssm:GetParametersByPath
                 Resource:
-                  - arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/shutter-box/db/*
+                  - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AppName}/db/*
       Tags:
         - Key: Name
           Value: !Sub ${AppName}-task-exec-role
