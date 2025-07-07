@@ -98,9 +98,9 @@ Resources:
         Type: S3
         Location: !Ref InfraBucket
       Stages:
-        - Name: FetchSourceFromS3
+        - Name: SourceFromS3
           Actions:
-            - Name: SourceZip
+            - Name: SourceFromS3
               ActionTypeId:
                 Category: Source
                 Owner: AWS
