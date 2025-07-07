@@ -1,42 +1,65 @@
 {
-    "family": "shutter-box-task",
-    "executionRoleArn": "arn:aws:iam::850995534424:role/shutter-box-infra-ECSAppStack-2FY-TaskExecutionRole-okCnNGppbO7M",
-    "taskRoleArn": "arn:aws:iam::850995534424:role/shutter-box-infra-ECSAppStack-2FY-TaskExecutionRole-okCnNGppbO7M",
-    "networkMode": "awsvpc",
-    "requiresCompatibilities": ["FARGATE"],
-    "cpu": "256",
-    "memory": "512",
-    "containerDefinitions": [
-      {
-        "name": "shutter-box-container",
-        "image": "850995534424.dkr.ecr.eu-west-1.amazonaws.com/shutter-box-repo:latest",
-        "portMappings": [
-          {
-            "containerPort": 8081,
-            "hostPort": 8081,
-            "protocol": "tcp"
-          }
-        ],
-        "environment": [
-            { "name": "AWS_REGION", "value": "eu-west-1" },
-            { "name": "BUCKET_NAME", "value": "shutter-box-v2-images" }
-        ],
-        "essential": true,
-        "logConfiguration": {
-          "logDriver": "awslogs",
-          "options": {
-            "awslogs-group": "/ecs/shutter-box",
-            "awslogs-region": "eu-west-1",
-            "awslogs-stream-prefix": "ecs"
-          }
-        },
-        "healthCheck": {
-            "command": ["CMD-SHELL", "curl -f http://localhost:8081/actuator/health || exit 1"],
-            "interval": 30,
-            "timeout": 5,
-            "retries": 3,
-            "startPeriod": 10
+  "family": "shutter-box-task",
+  "executionRoleArn": "arn:aws:iam::850995534424:role/sbox-infra-ECSAppStack-1CS6U2AIPP-TaskExecutionRole-uR5rgJp8oEHf",
+  "taskRoleArn": "arn:aws:iam::850995534424:role/sbox-infra-ECSAppStack-1CS6U2AIPPIAJ-AppTaskRole-9o2fNDzwhaLx",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "cpu": "256",
+  "memory": "512",
+  "containerDefinitions": [
+    {
+      "name": "shutter-box-container",
+      "image": "850995534424.dkr.ecr.eu-west-1.amazonaws.com/shutter-box-repo:latest",
+      "portMappings": [
+        {
+          "containerPort": 8081,
+          "hostPort": 8081,
+          "protocol": "tcp"
         }
+      ],
+      "environment": [
+        {
+          "name": "AWS_REGION",
+          "value": "eu-west-1"
+        },
+        {
+          "name": "BUCKET_NAME",
+          "value": "shutter-box-v2-images"
+        },
+        {
+          "name": "DB_HOST",
+          "value": "shutter-box-db.c18gyq2ow50r.eu-west-1.rds.amazonaws.com"
+        },
+        {
+          "name": "DB_PORT",
+          "value": "5432"
+        },
+        {
+          "name": "DB_NAME",
+          "value": "shutter-box-db"
+        }
+      ],
+      "essential": true,
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/shutter-box",
+          "awslogs-region": "eu-west-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "healthCheck": {
+        "command": [
+          "CMD-SHELL",
+          "curl -f http://localhost:8081/actuator/health || exit 1"
+        ],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 10
       }
-    ]
-  }
+    }
+  ]
+}

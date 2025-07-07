@@ -27,12 +27,7 @@ jobs:
         run: |
           aws s3 cp infra-templates/ s3://${{ secrets.S3_BUCKET_NAME }}/v2-infra-templates/ --recursive --region ${{ secrets.AWS_REGION }}
 
-      - name: Package CodeDeploy artifacts
+      - name: Upload CodeDeploy artifacts to S3 (uncompressed)
         run: |
-          cd pipeline-configs
-          zip -r ../pipeline-configs.zip appspec.yaml taskdef.json
-          cd ..
-
-      - name: Upload CodeDeploy artifacts to S3
-        run: |
-          aws s3 cp pipeline-configs.zip s3://${{ secrets.S3_BUCKET_NAME }}/v2-infra-templates/pipeline-configs.zip --region ${{ secrets.AWS_REGION }}
+          aws s3 cp pipeline-configs/appspec.yaml s3://${{ secrets.S3_BUCKET_NAME }}/v2-infra-templates/pipeline-configs/appspec.yaml --region ${{ secrets.AWS_REGION }}
+          aws s3 cp pipeline-configs/taskdef.json s3://${{ secrets.S3_BUCKET_NAME }}/v2-infra-templates/pipeline-configs/taskdef.json --region ${{ secrets.AWS_REGION }}
