@@ -163,7 +163,7 @@ Resources:
         - IpProtocol: tcp
           FromPort: 443
           ToPort: 443
-          SourceSecurityGroupId: !Ref ECSSecurityGroup
+          CidrIp: 10.120.0.0/16
       Tags:
         - Key: Name
           Value: !Sub ${AppName}-vpce-sg
@@ -173,6 +173,7 @@ Resources:
   # ECS Security Group
   ECSSecurityGroup:
     Type: AWS::EC2::SecurityGroup
+    DependsOn: VPCEndpointSG
     Properties:
       GroupDescription: SG to Allow ALB to ECS
       VpcId: !Ref VPCId
@@ -180,7 +181,11 @@ Resources:
         - IpProtocol: tcp
           FromPort: 8081
           ToPort: 8081
-          SourceSecurityGroupId: !Ref ALBSecurityGroup
+          CidrIp: 10.120.1.0/24   # ALB Public Subnet 1 CIDR
+        - IpProtocol: tcp
+          FromPort: 8081
+          ToPort: 8081
+          CidrIp: 10.120.2.0/24   # ALB Public Subnet 2 CIDR
       SecurityGroupEgress:
         - IpProtocol: tcp
           FromPort: 443
