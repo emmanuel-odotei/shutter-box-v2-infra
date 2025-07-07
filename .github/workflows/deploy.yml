@@ -32,7 +32,8 @@ jobs:
 
       - name: Package CodeDeploy artifacts
         run: |
-          zip pipeline-configs.zip pipeline-configs/appspec.yaml pipeline-configs/taskdef.json
+          cd pipeline-configs
+          zip ../pipeline-configs.zip appspec.yml taskdef.json
 
       - name: Upload CodeDeploy artifacts to S3
         run: |
