@@ -89,6 +89,18 @@ Resources:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
         - arn:aws:iam::aws:policy/AmazonS3FullAccess
+      Policies:
+        - PolicyName: AllowSSMSecrets
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ssm:GetParameters
+                  - ssm:GetParameter
+                  - ssm:GetParametersByPath
+                Resource:
+                  - arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/shutter-box/db/*
       Tags:
         - Key: Name
           Value: !Sub ${AppName}-task-exec-role
