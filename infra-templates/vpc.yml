@@ -176,7 +176,7 @@ Resources:
     DependsOn: VPCEndpointSG
     Properties:
       GroupDescription: SG to Allow ALB to ECS
-      VpcId: !Ref VPCId
+      VpcId: !Ref SBoxVPC
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 8081
