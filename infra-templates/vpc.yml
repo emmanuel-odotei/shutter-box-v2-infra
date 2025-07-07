@@ -159,22 +159,48 @@ Resources:
       RouteTableId: !Ref PrivateRouteTable2
 
   VPCEndpointSG:
+  Type: AWS::EC2::SecurityGroup
+  Properties:
+    GroupDescription: Security group for VPC Interface Endpoints
+    VpcId: !Ref SBoxVPC
+    SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 443
+        ToPort: 443
+        SourceSecurityGroupId: !Ref ECSSecurityGroup
+    Tags:
+      - Key: Name
+        Value: !Sub ${AppName}-vpce-sg
+      - Key: Lab
+        Value: !Ref LabTag
+
+  # ECS Security Group
+  ECSSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Security group for VPC Interface Endpoints
-      VpcId: !Ref SBoxVPC
+      GroupDescription: SG to Allow ALB to ECS
+      VpcId: !Ref VPCId
       SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 8081
+          ToPort: 8081
+          SourceSecurityGroupId: !Ref ALBSecurityGroup
+      SecurityGroupEgress:
         - IpProtocol: tcp
           FromPort: 443
           ToPort: 443
-          CidrIp: 10.120.0.0/16
+          DestinationSecurityGroupId: !Ref VPCEndpointSG
+        - IpProtocol: -1
+          FromPort: 0
+          ToPort: 0
+          CidrIp: 0.0.0.0/0
       Tags:
         - Key: Name
-          Value: !Sub ${AppName}-vpce-sg
+          Value: !Sub ${AppName}-ecs-sg
         - Key: Lab
           Value: !Ref LabTag
 
-  ## S3 VPC Gateway Endpoint
+  # S3 VPC Gateway Endpoint
   S3Endpoint:
     Type: AWS::EC2::VPCEndpoint
     Properties:
@@ -289,3 +315,9 @@ Outputs:
     Value: !Ref VPCEndpointSG
     Export:
       Name: !Sub ${AppName}-VPC-Endpoint-SG
+
+  ECSSecurityGroup:
+    Description: 'Security Group ID for ECS Tasks'
+    Value: !Ref ECSSecurityGroup
+    Export:
+      Name: !Sub ${AppName}-ECS-SG

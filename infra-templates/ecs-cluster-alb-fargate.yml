@@ -20,6 +20,9 @@ Parameters:
   VPCEndpointSG:
     Description: 'Security Group for VPC endpoints'
     Type: AWS::EC2::SecurityGroup::Id
+  ECSSecurityGroup:
+    Description: 'Security Group for ECS task'
+    Type: AWS::EC2::SecurityGroup::Id
   LabTag:
     Type: String
 
@@ -101,7 +104,6 @@ Resources:
                   - ssm:GetParametersByPath
                 Resource:
                   - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AppName}/db/*
-
         - PolicyName: AllowECRAccess
           PolicyDocument:
             Version: '2012-10-17'
@@ -168,32 +170,6 @@ Resources:
       Tags:
         - Key: Name
           Value: !Sub ${AppName}-alb-sg
-        - Key: Lab
-          Value: !Ref LabTag
-
-# ECS Security Group
-  ECSSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: SG to Allow ALB to ECS
-      VpcId: !Ref VPCId
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 8081
-          ToPort: 8081
-          SourceSecurityGroupId: !Ref ALBSecurityGroup
-      SecurityGroupEgress:
-        - IpProtocol: tcp
-          FromPort: 443
-          ToPort: 443
-          DestinationSecurityGroupId: !Ref VPCEndpointSG
-        - IpProtocol: -1
-          FromPort: 0
-          ToPort: 0
-          CidrIp: 0.0.0.0/0
-      Tags:
-        - Key: Name
-          Value: !Sub ${AppName}-ecs-sg
         - Key: Lab
           Value: !Ref LabTag
 
@@ -440,4 +416,4 @@ Outputs:
     Description: ARN of the TaskExecutionRole
     Value: !Ref TaskExecutionRole
     Export:
-      Name: TaskExecRoleArn 
+      Name: TaskExecRoleArn

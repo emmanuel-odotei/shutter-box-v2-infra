@@ -44,6 +44,7 @@ Resources:
         PrivateSubnet2: !GetAtt VPCStack.Outputs.PrivateSubnet2Id
         S3BucketName: !GetAtt S3Stack.Outputs.BucketName
         VPCEndpointSG: !GetAtt VPCStack.Outputs.VPCEndpointSecurityGroup
+        ECSSecurityGroup: !GetAtt VPCStack.Outputs.ECSSecurityGroup
         AppName: !Ref AppName
         LabTag: !Ref LabTag
 
