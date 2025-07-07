@@ -376,7 +376,7 @@ Resources:
         - Sid: AllowPublicReadAccess
           Effect: Allow
           Principal: "*"
-          Action: "s3:GetObject"
+          Action: s3:GetObject
           Resource: !Sub "arn:aws:s3:::${S3BucketName}/*"
 
 Outputs:
