@@ -3,7 +3,7 @@ Resources:
   - TargetService:
       Type: AWS::ECS::Service
       Properties:
-        TaskDefinition: taskdef.json
+        TaskDefinition: "arn:aws:ecs:eu-west-1:850995534424:task-definition/shutter-box-task:11"
         LoadBalancerInfo:
           ContainerName: shutter-box-container
           ContainerPort: 8081

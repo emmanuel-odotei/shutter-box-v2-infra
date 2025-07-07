@@ -108,7 +108,7 @@ Resources:
                 Version: 1
               Configuration:
                 S3Bucket: !Ref InfraBucket
-                S3ObjectKey: v2-infra-templates/pipeline-configs/
+                S3ObjectKey: v2-infra-templates/pipeline-configs.zip
                 PollForSourceChanges: false
               OutputArtifacts:
                 - Name: SourceOutput
