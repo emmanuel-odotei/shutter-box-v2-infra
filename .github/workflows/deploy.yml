@@ -36,4 +36,4 @@ jobs:
 
       - name: Upload CodeDeploy artifacts to S3
         run: |
-          aws s3 cp pipeline-configs.zip s3://${{ secrets.S3_BUCKET_NAME }}/v2-infra-templates/pipeline-configs.zip --region ${{ secrets.AWS_REGION }}
+          aws s3 cp pipeline-configs.zip s3://${{ secrets.S3_BUCKET_NAME }}/pipeline-configs.zip --region ${{ secrets.AWS_REGION }}
