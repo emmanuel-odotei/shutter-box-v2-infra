@@ -4,12 +4,8 @@ Description: Custom VPC with Public/Private Subnets and Endpoints for ECS Fargat
 Parameters:
   AppName:
     Type: String
-    Default: shutter-box
-
   LabTag:
     Type: String
-    Default: week_6_lab
-
   S3BucketName:
     Description: 'Shutter box S3 upload bucket'
     Type: String
@@ -159,20 +155,20 @@ Resources:
       RouteTableId: !Ref PrivateRouteTable2
 
   VPCEndpointSG:
-  Type: AWS::EC2::SecurityGroup
-  Properties:
-    GroupDescription: Security group for VPC Interface Endpoints
-    VpcId: !Ref SBoxVPC
-    SecurityGroupIngress:
-      - IpProtocol: tcp
-        FromPort: 443
-        ToPort: 443
-        SourceSecurityGroupId: !Ref ECSSecurityGroup
-    Tags:
-      - Key: Name
-        Value: !Sub ${AppName}-vpce-sg
-      - Key: Lab
-        Value: !Ref LabTag
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for VPC Interface Endpoints
+      VpcId: !Ref SBoxVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          SourceSecurityGroupId: !Ref ECSSecurityGroup
+      Tags:
+        - Key: Name
+          Value: !Sub ${AppName}-vpce-sg
+        - Key: Lab
+          Value: !Ref LabTag
 
   # ECS Security Group
   ECSSecurityGroup:
