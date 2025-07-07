@@ -373,12 +373,6 @@ Resources:
             - !Sub "arn:aws:s3:::${S3BucketName}"
             - !Sub "arn:aws:s3:::${S3BucketName}/*"
 
-        - Sid: AllowPublicReadAccess
-          Effect: Allow
-          Principal: "*"
-          Action: s3:GetObject
-          Resource: !Sub "arn:aws:s3:::${S3BucketName}/*"
-
 Outputs:
   AppLoadBalancerDNS:
     Description: ALB DNS to access app
