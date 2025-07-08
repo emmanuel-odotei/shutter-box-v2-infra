@@ -49,6 +49,51 @@ Resources:
         - Key: Lab
           Value: !Ref LabTag
 
+  DBUsernameParam:
+    Type: AWS::SSM::Parameter
+    DependsOn: RDSInstance
+    Properties:
+      Name: !Sub /${AppName}/db/username
+      Type: String
+      Value: sbdbadmin
+      Description: RDS db username
+
+  DBPasswordParam:
+    Type: AWS::SSM::Parameter
+    DependsOn: RDSInstance
+    Properties:
+      Name: !Sub /${AppName}/db/password
+      Type: String
+      Value: !Sub "{{resolve:secretsmanager:${DBSecret}::password}}"
+      Description: RDS db password (from Secrets Manager)
+
+  DBHostParam:
+    Type: AWS::SSM::Parameter
+    DependsOn: RDSInstance
+    Properties:
+      Name: !Sub /${AppName}/db/host
+      Type: String
+      Value: !GetAtt RDSInstance.Endpoint.Address
+      Description: RDS db host
+
+  DBNameParam:
+    Type: AWS::SSM::Parameter
+    DependsOn: RDSInstance
+    Properties:
+      Name: !Sub /${AppName}/db/name
+      Type: String
+      Value: shutterboxdb
+      Description: RDS db name
+
+  DBPortParam:
+    Type: AWS::SSM::Parameter
+    DependsOn: RDSInstance
+    Properties:
+      Name: !Sub /${AppName}/db/port
+      Type: String
+      Value: !GetAtt RDSInstance.Endpoint.Port
+      Description: RDS db port
+
   RDSInstance:
     Type: AWS::RDS::DBInstance
     DeletionPolicy: Delete
