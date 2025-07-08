@@ -40,7 +40,7 @@ Resources:
         AppName: !Ref AppName
         LabTag: !Ref LabTag
         VPCId: !GetAtt VPCStack.Outputs.VPCId
-        VPCEndpointSG: !GetAtt VPCStack.Outputs.VPCEndpointSecurityGroup
+        VPCEndpointSG: !GetAtt VPCStack.Outputs.VPCEndpointSG
 
   ECSAppStack:
     Type: AWS::CloudFormation::Stack
@@ -54,7 +54,7 @@ Resources:
         PrivateSubnet1: !GetAtt VPCStack.Outputs.PrivateSubnet1Id
         PrivateSubnet2: !GetAtt VPCStack.Outputs.PrivateSubnet2Id
         S3BucketName: !GetAtt S3Stack.Outputs.BucketName
-        VPCEndpointSG: !GetAtt VPCStack.Outputs.VPCEndpointSecurityGroup
+        VPCEndpointSG: !GetAtt VPCStack.Outputs.VPCEndpointSG
         ECSSecurityGroup: !GetAtt SecurityGroupsStack.Outputs.ECSSecurityGroup
         ALBSecurityGroup: !GetAtt SecurityGroupsStack.Outputs.ALBSecurityGroup
         AppName: !Ref AppName
@@ -99,7 +99,7 @@ Resources:
         VPCId: !GetAtt VPCStack.Outputs.VPCId
         PrivateSubnet1: !GetAtt VPCStack.Outputs.PrivateSubnet1Id
         PrivateSubnet2: !GetAtt VPCStack.Outputs.PrivateSubnet2Id
-        VPCEndpointSG: !GetAtt VPCStack.Outputs.VPCEndpointSecurityGroup
+        VPCEndpointSG: !GetAtt VPCStack.Outputs.VPCEndpointSG
         RdsSecurityGroup: !GetAtt SecurityGroupsStack.Outputs.RdsSecurityGroup
         RdsVPCEndpointSG: !GetAtt SecurityGroupsStack.Outputs.RdsVPCEndpointSG
 
