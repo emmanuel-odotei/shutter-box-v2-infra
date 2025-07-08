@@ -146,7 +146,6 @@ Resources:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonS3FullAccess
         - !Ref TaskSSMPolicy
-
       Policies:
         - PolicyName: AllowECRPull
           PolicyDocument:

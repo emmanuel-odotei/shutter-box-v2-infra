@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Description: RDS PostgreSQL with Multi-AZ, VPC Endpoints, and SSM Secrets Integration
 
 Parameters:
@@ -12,14 +12,11 @@ Parameters:
     Type: AWS::EC2::Subnet::Id
   PrivateSubnet2:
     Type: AWS::EC2::Subnet::Id
-  VPCEndpointSG:
-    Description: 'Security Group for VPC endpoints'
-    Type: AWS::EC2::SecurityGroup::Id
   RdsSecurityGroup:
-    Description: 'Security Group for RDS'
+    Description: "Security Group for RDS"
     Type: AWS::EC2::SecurityGroup::Id
   RdsVPCEndpointSG:
-    Description: 'Security Group for RDS VPC endpoints'
+    Description: "Security Group for RDS VPC endpoints"
     Type: AWS::EC2::SecurityGroup::Id
 
 Resources:
@@ -66,15 +63,15 @@ Resources:
       MultiAZ: true
       DBName: shutterboxdb
       MasterUsername: !Join
-        - ''
-        - - '{{resolve:secretsmanager:'
+        - ""
+        - - "{{resolve:secretsmanager:"
           - !Ref DBSecret
-          - '::username}}'
+          - "::username}}"
       MasterUserPassword: !Join
-        - ''
-        - - '{{resolve:secretsmanager:'
+        - ""
+        - - "{{resolve:secretsmanager:"
           - !Ref DBSecret
-          - '::password}}'
+          - "::password}}"
       VPCSecurityGroups:
         - !Ref RdsSecurityGroup
       DBSubnetGroupName: !Ref DBSubnetGroup

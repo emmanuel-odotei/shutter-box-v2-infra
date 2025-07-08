@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Description: Security Groups for infrastructure
 
 Parameters:
@@ -9,7 +9,7 @@ Parameters:
   VPCId:
     Type: AWS::EC2::VPC::Id
   VPCEndpointSG:
-    Description: 'Security Group for VPC endpoints'
+    Description: "Security Group for VPC endpoints"
     Type: AWS::EC2::SecurityGroup::Id
 
 Resources:
@@ -52,8 +52,6 @@ Resources:
           ToPort: 443
           DestinationSecurityGroupId: !Ref VPCEndpointSG
         - IpProtocol: -1
-          FromPort: 0
-          ToPort: 0
           CidrIp: 0.0.0.0/0
       Tags:
         - Key: Name
