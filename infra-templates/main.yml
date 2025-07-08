@@ -35,7 +35,7 @@ Resources:
     Type: AWS::CloudFormation::Stack
     DependsOn: VPCStack
     Properties:
-      TemplateURL: !Sub "${TemplateS3BaseURL}/security-groups.yaml"
+      TemplateURL: !Sub "${TemplateS3BaseURL}/securitygroups.yaml"
       Parameters:
         AppName: !Ref AppName
         LabTag: !Ref LabTag
