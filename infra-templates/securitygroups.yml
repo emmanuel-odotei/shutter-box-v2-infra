@@ -46,13 +46,6 @@ Resources:
           FromPort: 8081
           ToPort: 8081
           SourceSecurityGroupId: !Ref ALBSecurityGroup
-      SecurityGroupEgress:
-        - IpProtocol: tcp
-          FromPort: 443
-          ToPort: 443
-          DestinationSecurityGroupId: !Ref VPCEndpointSG
-        - IpProtocol: -1
-          CidrIp: 0.0.0.0/0
       Tags:
         - Key: Name
           Value: !Sub ${AppName}-ecs-sg

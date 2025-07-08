@@ -303,7 +303,7 @@ Resources:
         AwsvpcConfiguration:
           AssignPublicIp: DISABLED
           Subnets: [!Ref PrivateSubnet1, !Ref PrivateSubnet2]
-          SecurityGroups: [!Ref ECSSecurityGroup, !Ref VPCEndpointSG]
+          SecurityGroups: [!Ref ECSSecurityGroup]
       LoadBalancers:
         - ContainerName: !Sub ${AppName}-container
           ContainerPort: 8081
