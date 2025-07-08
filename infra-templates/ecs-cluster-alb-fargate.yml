@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Description: ECS Cluster, Fargate Service with ALB and Auto Scaling
 
 Parameters:
@@ -15,27 +15,27 @@ Parameters:
   PrivateSubnet2:
     Type: AWS::EC2::Subnet::Id
   S3BucketName:
-    Description: 'Name of the S3 bucket for images'
+    Description: "Name of the S3 bucket for images"
     Type: String
   VPCEndpointSG:
-    Description: 'Security Group for VPC endpoints'
+    Description: "Security Group for VPC endpoints"
     Type: AWS::EC2::SecurityGroup::Id
   ECSSecurityGroup:
-    Description: 'Security Group for ECS task'
+    Description: "Security Group for ECS task"
     Type: AWS::EC2::SecurityGroup::Id
   ALBSecurityGroup:
-    Description: 'Security Group for Application Load Balancer'
+    Description: "Security Group for Application Load Balancer"
     Type: AWS::EC2::SecurityGroup::Id
   LabTag:
     Type: String
 
 Resources:
-# ECS Autoscaling Role
+  # ECS Autoscaling Role
   ECSAutoScalingRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Principal:
@@ -47,32 +47,32 @@ Resources:
       Policies:
         - PolicyName: !Sub ${AppName}-ecs-autoscaling-policy
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
-                  - 'application-autoscaling:*'
-                  - 'cloudwatch:DescribeAlarms'
-                  - 'cloudwatch:PutMetricAlarm'
-                  - 'ecs:DescribeServices'
-                  - 'ecs:UpdateService'
-                  - 'logs:PutLogEvents'
-                  - 'logs:CreateLogGroup'
-                  - 'logs:CreateLogStream'
-                Resource: '*'
+                  - "application-autoscaling:*"
+                  - "cloudwatch:DescribeAlarms"
+                  - "cloudwatch:PutMetricAlarm"
+                  - "ecs:DescribeServices"
+                  - "ecs:UpdateService"
+                  - "logs:PutLogEvents"
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                Resource: "*"
       Tags:
         - Key: Name
           Value: !Sub ${AppName}-ecs-autoscaling-role
         - Key: Lab
           Value: !Ref LabTag
 
-## IAM Policy for ECS Tasks to access SSM
+  ## IAM Policy for ECS Tasks to access SSM
   TaskSSMPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       ManagedPolicyName: !Sub ${AppName}-ecs-ssm-policy
       PolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Action:
@@ -82,7 +82,7 @@ Resources:
             Resource:
               - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AppName}/db/*
 
-# ECS Task Execution Role
+  # ECS Task Execution Role
   TaskExecutionRole:
     Type: AWS::IAM::Role
     Properties:
@@ -98,7 +98,7 @@ Resources:
       Policies:
         - PolicyName: AllowSSMSecrets
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
@@ -109,21 +109,21 @@ Resources:
                   - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AppName}/db/*
         - PolicyName: AllowECRAccess
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
-                  - 'ecr:GetAuthorizationToken'
-                  - 'ecr:BatchCheckLayerAvailability'
-                  - 'ecr:GetDownloadUrlForLayer'
-                  - 'ecr:BatchGetImage'
-                  - 'ecr:DescribeRepositories'
-                  - 'ecr:ListImages'
-                  - 'ecr:DescribeImages'
-                  - 'logs:CreateLogStream'
-                  - 'logs:PutLogEvents'
-                  - 'logs:CreateLogGroup'
-                  - 'logs:DescribeLogStreams'
+                  - "ecr:GetAuthorizationToken"
+                  - "ecr:BatchCheckLayerAvailability"
+                  - "ecr:GetDownloadUrlForLayer"
+                  - "ecr:BatchGetImage"
+                  - "ecr:DescribeRepositories"
+                  - "ecr:ListImages"
+                  - "ecr:DescribeImages"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                  - "logs:CreateLogGroup"
+                  - "logs:DescribeLogStreams"
                 Resource: "*"
       Tags:
         - Key: Name
@@ -131,41 +131,41 @@ Resources:
         - Key: Lab
           Value: !Ref LabTag
 
-# Application Task Role 
+  # Application Task Role
   AppTaskRole:
-  Type: AWS::IAM::Role
-  Properties:
-    AssumeRolePolicyDocument:
-      Version: "2012-10-17"
-      Statement:
-        - Effect: Allow
-          Principal:
-            Service: ecs-tasks.amazonaws.com
-          Action: sts:AssumeRole
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
 
-    ManagedPolicyArns:
-      - arn:aws:iam::aws:policy/AmazonS3FullAccess
-      - !Ref TaskSSMPolicy
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+        - !Ref TaskSSMPolicy
 
-    Policies:
-      - PolicyName: AllowECRPull
-        PolicyDocument:
-          Version: "2012-10-17"
-          Statement:
-            - Effect: Allow
-              Action:
-                - ecr:GetAuthorizationToken
-                - ecr:BatchCheckLayerAvailability
-                - ecr:GetDownloadUrlForLayer
-                - ecr:BatchGetImage
-              Resource: "*"
-    Tags:
-      - Key: Name
-        Value: !Sub ${AppName}-task-role
-      - Key: Lab
-        Value: !Ref LabTag
+      Policies:
+        - PolicyName: AllowECRPull
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ecr:GetAuthorizationToken
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:BatchGetImage
+                Resource: "*"
+      Tags:
+        - Key: Name
+          Value: !Sub ${AppName}-task-role
+        - Key: Lab
+          Value: !Ref LabTag
 
-# Elastic Container Service (ECS) Cluster
+  # Elastic Container Service (ECS) Cluster
   ECSCluster:
     Type: AWS::ECS::Cluster
     Properties:
@@ -177,9 +177,9 @@ Resources:
         - Key: Name
           Value: !Sub ${AppName}-ecs-cluster
         - Key: Lab
-          Value: !Ref LabTag      
+          Value: !Ref LabTag
 
-# Application Load Balancer
+  # Application Load Balancer
   LoadBalancer:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
@@ -195,7 +195,7 @@ Resources:
         - Key: Lab
           Value: !Ref LabTag
 
-# Load Balancer Target Group
+  # Load Balancer Target Group
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
@@ -216,7 +216,7 @@ Resources:
           Value: !Sub ${AppName}-btg
         - Key: Lab
           Value: !Ref LabTag
-  
+
   # For blue/green codedeploy
   TargetGroup2:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
@@ -239,7 +239,7 @@ Resources:
         - Key: Lab
           Value: !Ref LabTag
 
-# Load Balancer Listener
+  # Load Balancer Listener
   Listener:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
@@ -259,9 +259,9 @@ Resources:
         - Key: Name
           Value: !Sub ${AppName}-ecs-logs
         - Key: Lab
-          Value: !Ref LabTag 
+          Value: !Ref LabTag
 
-# ECS Task Definition
+  # ECS Task Definition
   TaskDefinition:
     Type: AWS::ECS::TaskDefinition
     DependsOn: CloudWatchLogGroup
@@ -316,7 +316,7 @@ Resources:
         - Key: Lab
           Value: !Ref LabTag
 
-# ECS Service
+  # ECS Service
   ECSService:
     Type: AWS::ECS::Service
     DependsOn: Listener
@@ -331,7 +331,7 @@ Resources:
         AwsvpcConfiguration:
           AssignPublicIp: DISABLED
           Subnets: [!Ref PrivateSubnet1, !Ref PrivateSubnet2]
-          SecurityGroups: [!Ref ECSSecurityGroup, !Ref VPCEndpointSG ]
+          SecurityGroups: [!Ref ECSSecurityGroup, !Ref VPCEndpointSG]
       LoadBalancers:
         - ContainerName: !Sub ${AppName}-container
           ContainerPort: 8081
@@ -343,7 +343,7 @@ Resources:
         - Key: Lab
           Value: !Ref LabTag
 
-# Target Auto Scaling
+  # Target Auto Scaling
   AutoScalingTarget:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
     DependsOn:
@@ -356,7 +356,7 @@ Resources:
       ScalableDimension: ecs:service:DesiredCount
       ServiceNamespace: ecs
 
-# Auto Scaling Policy
+  # Auto Scaling Policy
   AutoScalingPolicy:
     Type: AWS::ApplicationAutoScaling::ScalingPolicy
     Properties:
@@ -370,7 +370,7 @@ Resources:
         ScaleInCooldown: 60
         ScaleOutCooldown: 60
 
-# S3 Bucket Policy to allow ECS Task Role access
+  # S3 Bucket Policy to allow ECS Task Role access
   S3AccessPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
