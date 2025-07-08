@@ -4,40 +4,25 @@ Description: RDS PostgreSQL with Multi-AZ, VPC Endpoints, and SSM Secrets Integr
 Parameters:
   AppName:
     Type: String
-
   LabTag:
     Type: String
-
   VPCId:
     Type: AWS::EC2::VPC::Id
-
   PrivateSubnet1:
     Type: AWS::EC2::Subnet::Id
-
   PrivateSubnet2:
     Type: AWS::EC2::Subnet::Id
-
   VPCEndpointSG:
     Description: 'Security Group for VPC endpoints'
     Type: AWS::EC2::SecurityGroup::Id
+  RdsSecurityGroup:
+    Description: 'Security Group for RDS'
+    Type: AWS::EC2::SecurityGroup::Id
+  RdsVPCEndpointSG:
+    Description: 'Security Group for RDS VPC endpoints'
+    Type: AWS::EC2::SecurityGroup::Id
 
 Resources:
-  RdsSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: Security group for RDS PostgreSQL
-      VpcId: !Ref VPCId
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 5432
-          ToPort: 5432
-          SourceSecurityGroupId: !Ref VPCEndpointSG
-      Tags:
-        - Key: Name
-          Value: !Sub ${AppName}-rds-sg
-        - Key: Lab
-          Value: !Ref LabTag
-
   DBSecret:
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -67,27 +52,11 @@ Resources:
         - Key: Lab
           Value: !Ref LabTag
 
-  RdsEndpointSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: SG for VPC Interface Endpoints (SSM, RDS Data)
-      VpcId: !Ref VPCId
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 443
-          ToPort: 443
-          SourceSecurityGroupId: !Ref VPCEndpointSG
-      Tags:
-        - Key: Name
-          Value: !Sub ${AppName}-vpce-rds-sg
-        - Key: Lab
-          Value: !Ref LabTag
-
   RDSInstance:
     Type: AWS::RDS::DBInstance
     DeletionPolicy: Delete
     DependsOn:
-      - RdsEndpointSecurityGroup
+      - RdsVPCEndpointSG
       - DBSubnetGroup
       - DBSecret
     Properties:
@@ -178,7 +147,7 @@ Resources:
         - !Ref PrivateSubnet2
       PrivateDnsEnabled: true
       SecurityGroupIds:
-        - !Ref RdsEndpointSecurityGroup
+        - !Ref RdsVPCEndpointSG
 
   RdsDataEndpoint:
     Type: AWS::EC2::VPCEndpoint
@@ -191,7 +160,7 @@ Resources:
         - !Ref PrivateSubnet2
       PrivateDnsEnabled: true
       SecurityGroupIds:
-        - !Ref RdsEndpointSecurityGroup
+        - !Ref RdsVPCEndpointSG
 
   SSMEndpoint:
     Type: AWS::EC2::VPCEndpoint
@@ -204,7 +173,7 @@ Resources:
         - !Ref PrivateSubnet2
       PrivateDnsEnabled: true
       SecurityGroupIds:
-        - !Ref RdsEndpointSecurityGroup
+        - !Ref RdsVPCEndpointSG
 
 Outputs:
   RDSInstanceEndpoint:
@@ -212,14 +181,3 @@ Outputs:
     Value: !GetAtt RDSInstance.Endpoint.Address
     Export:
       Name: !Sub ${AppName}-rds-endpoint
-
-  RdsSecurityGroupId:
-    Description: Security group ID for RDS
-    Value: !Ref RdsSecurityGroup
-    Export:
-      Name: !Sub ${AppName}-rds-sg
-
-  RdsVPCEndpointSG:
-    Value: !Ref RdsEndpointSecurityGroup
-    Export:
-      Name: !Sub ${AppName}-vpce-rds-sg

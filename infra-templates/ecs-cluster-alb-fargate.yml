@@ -23,6 +23,9 @@ Parameters:
   ECSSecurityGroup:
     Description: 'Security Group for ECS task'
     Type: AWS::EC2::SecurityGroup::Id
+  ALBSecurityGroup:
+    Description: 'Security Group for Application Load Balancer'
+    Type: AWS::EC2::SecurityGroup::Id
   LabTag:
     Type: String
 
@@ -110,10 +113,17 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - ecr:GetAuthorizationToken
-                  - ecr:BatchCheckLayerAvailability
-                  - ecr:GetDownloadUrlForLayer
-                  - ecr:BatchGetImage
+                  - 'ecr:GetAuthorizationToken'
+                  - 'ecr:BatchCheckLayerAvailability'
+                  - 'ecr:GetDownloadUrlForLayer'
+                  - 'ecr:BatchGetImage'
+                  - 'ecr:DescribeRepositories'
+                  - 'ecr:ListImages'
+                  - 'ecr:DescribeImages'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                  - 'logs:CreateLogGroup'
+                  - 'logs:DescribeLogStreams'
                 Resource: "*"
       Tags:
         - Key: Name
@@ -123,20 +133,37 @@ Resources:
 
 # Application Task Role 
   AppTaskRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: ecs-tasks.amazonaws.com
-            Action: sts:AssumeRole
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/AmazonS3FullAccess
-        - !Ref TaskSSMPolicy
-      Tags:
-        - Key: Name
-          Value: !Sub ${AppName}-task-role
+  Type: AWS::IAM::Role
+  Properties:
+    AssumeRolePolicyDocument:
+      Version: "2012-10-17"
+      Statement:
+        - Effect: Allow
+          Principal:
+            Service: ecs-tasks.amazonaws.com
+          Action: sts:AssumeRole
+
+    ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/AmazonS3FullAccess
+      - !Ref TaskSSMPolicy
+
+    Policies:
+      - PolicyName: AllowECRPull
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - ecr:GetAuthorizationToken
+                - ecr:BatchCheckLayerAvailability
+                - ecr:GetDownloadUrlForLayer
+                - ecr:BatchGetImage
+              Resource: "*"
+    Tags:
+      - Key: Name
+        Value: !Sub ${AppName}-task-role
+      - Key: Lab
+        Value: !Ref LabTag
 
 # Elastic Container Service (ECS) Cluster
   ECSCluster:
@@ -150,28 +177,7 @@ Resources:
         - Key: Name
           Value: !Sub ${AppName}-ecs-cluster
         - Key: Lab
-          Value: !Ref LabTag
-      
-# Application Load Balancer Security Group
-  ALBSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: Security Group to Allow HTTP to ALB
-      VpcId: !Ref VPCId
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 80
-          ToPort: 80
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
-          FromPort: 443
-          ToPort: 443
-          CidrIp: 0.0.0.0/0
-      Tags:
-        - Key: Name
-          Value: !Sub ${AppName}-alb-sg
-        - Key: Lab
-          Value: !Ref LabTag
+          Value: !Ref LabTag      
 
 # Application Load Balancer
   LoadBalancer:
@@ -296,6 +302,14 @@ Resources:
               awslogs-group: !Ref CloudWatchLogGroup
               awslogs-region: !Ref "AWS::Region"
               awslogs-stream-prefix: ecs
+          HealthCheck:
+            Command:
+              - "CMD-SHELL"
+              - "/bin/sh -c 'curl -f http://localhost:8080/actuator/health || exit 1'"
+            Interval: 30
+            Timeout: 10
+            Retries: 3
+            StartPeriod: 60
       Tags:
         - Key: Name
           Value: !Sub ${AppName}-task-definition

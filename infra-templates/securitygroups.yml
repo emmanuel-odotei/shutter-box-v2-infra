@@ -1,0 +1,124 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Security Groups for infrastructure
+
+Parameters:
+  AppName:
+    Type: String
+  LabTag:
+    Type: String
+  VPCId:
+    Type: AWS::EC2::VPC::Id
+  VPCEndpointSG:
+    Description: 'Security Group for VPC endpoints'
+    Type: AWS::EC2::SecurityGroup::Id
+
+Resources:
+  # Application Load Balancer Security Group
+  ALBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security Group to Allow HTTP to ALB
+      VpcId: !Ref VPCId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Sub ${AppName}-alb-sg
+        - Key: Lab
+          Value: !Ref LabTag
+
+  # ECS Security Group
+  ECSSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    DependsOn: 
+      - VPCEndpointSG
+      - ALBSecurityGroup
+    Properties:
+      GroupDescription: SG to Allow ALB to ECS
+      VpcId: !Ref VPCId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 8081
+          ToPort: 8081
+          SourceSecurityGroupId: !Ref ALBSecurityGroup
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          DestinationSecurityGroupId: !Ref VPCEndpointSG
+        - IpProtocol: -1
+          FromPort: 0
+          ToPort: 0
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Sub ${AppName}-ecs-sg
+        - Key: Lab
+          Value: !Ref LabTag
+
+  # RDS Security Group
+  RdsSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    DependsOn: VPCEndpointSG
+    Properties:
+      GroupDescription: Security group for RDS PostgreSQL
+      VpcId: !Ref VPCId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          SourceSecurityGroupId: !Ref VPCEndpointSG
+      Tags:
+        - Key: Name
+          Value: !Sub ${AppName}-rds-sg
+        - Key: Lab
+          Value: !Ref LabTag
+  # RDS Endpoint Security Group
+  RdsEndpointSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    DependsOn: VPCEndpointSG
+    Properties:
+      GroupDescription: SG for VPC Interface Endpoints (SSM, RDS Data)
+      VpcId: !Ref VPCId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          SourceSecurityGroupId: !Ref VPCEndpointSG
+      Tags:
+        - Key: Name
+          Value: !Sub ${AppName}-vpce-rds-sg
+        - Key: Lab
+          Value: !Ref LabTag
+
+Outputs:
+  ALBSecurityGroup:
+    Description: SG for Application Load Balancer
+    Value: !Ref ALBSecurityGroup
+    Export:
+      Name: !Sub ${AppName}-alb-sg
+
+  ECSSecurityGroup:
+    Description: SG for ECS Tasks
+    Value: !Ref ECSSecurityGroup
+    Export:
+      Name: !Sub ${AppName}-ecs-sg
+
+  RdsSecurityGroup:
+    Description: Security group ID for RDS
+    Value: !Ref RdsSecurityGroup
+    Export:
+      Name: !Sub ${AppName}-rds-sg
+
+  RdsVPCEndpointSG:
+    Description: Security group ID for RDS VPC endpoint
+    Value: !Ref RdsEndpointSecurityGroup
+    Export:
+      Name: !Sub ${AppName}-vpce-rds-sg

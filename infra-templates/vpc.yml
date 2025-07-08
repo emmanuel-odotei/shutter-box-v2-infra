@@ -9,6 +9,7 @@ Parameters:
   S3BucketName:
     Description: 'Shutter box S3 upload bucket'
     Type: String
+  
 
 Resources:
 # VPC
@@ -21,6 +22,23 @@ Resources:
       Tags:
         - Key: Name
           Value: !Sub ${AppName}-vpc
+        - Key: Lab
+          Value: !Ref LabTag
+  
+# VPC Endpoint Security Group
+  VPCEndpointSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for VPC Interface Endpoints
+      VpcId: !Ref SBoxVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 10.120.0.0/16
+      Tags:
+        - Key: Name
+          Value: !Sub ${AppName}-vpce-sg
         - Key: Lab
           Value: !Ref LabTag
 
@@ -154,53 +172,6 @@ Resources:
       SubnetId: !Ref PrivateSubnet2
       RouteTableId: !Ref PrivateRouteTable2
 
-  VPCEndpointSG:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: Security group for VPC Interface Endpoints
-      VpcId: !Ref SBoxVPC
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 443
-          ToPort: 443
-          CidrIp: 10.120.0.0/16
-      Tags:
-        - Key: Name
-          Value: !Sub ${AppName}-vpce-sg
-        - Key: Lab
-          Value: !Ref LabTag
-
-  # ECS Security Group
-  ECSSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    DependsOn: VPCEndpointSG
-    Properties:
-      GroupDescription: SG to Allow ALB to ECS
-      VpcId: !Ref SBoxVPC
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 8081
-          ToPort: 8081
-          CidrIp: 10.120.1.0/24   # ALB Public Subnet 1 CIDR
-        - IpProtocol: tcp
-          FromPort: 8081
-          ToPort: 8081
-          CidrIp: 10.120.2.0/24   # ALB Public Subnet 2 CIDR
-      SecurityGroupEgress:
-        - IpProtocol: tcp
-          FromPort: 443
-          ToPort: 443
-          DestinationSecurityGroupId: !Ref VPCEndpointSG
-        - IpProtocol: -1
-          FromPort: 0
-          ToPort: 0
-          CidrIp: 0.0.0.0/0
-      Tags:
-        - Key: Name
-          Value: !Sub ${AppName}-ecs-sg
-        - Key: Lab
-          Value: !Ref LabTag
-
   # S3 VPC Gateway Endpoint
   S3Endpoint:
     Type: AWS::EC2::VPCEndpoint
@@ -311,14 +282,8 @@ Outputs:
     Export:
       Name: !Sub ${AppName}-private-subnet-2
   
-  VPCEndpointSecurityGroup:
-    Description: 'Security Group ID for VPC endpoints'
+  VPCEndpointSG:
+    Description: SG for VPC Endpoints
     Value: !Ref VPCEndpointSG
     Export:
-      Name: !Sub ${AppName}-VPC-Endpoint-SG
-
-  ECSSecurityGroup:
-    Description: 'Security Group ID for ECS Tasks'
-    Value: !Ref ECSSecurityGroup
-    Export:
-      Name: !Sub ${AppName}-ECS-SG
+      Name: !Sub ${AppName}-vpce-sg
