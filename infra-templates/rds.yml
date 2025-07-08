@@ -56,7 +56,6 @@ Resources:
     Type: AWS::RDS::DBInstance
     DeletionPolicy: Delete
     DependsOn:
-      - RdsVPCEndpointSG
       - DBSubnetGroup
       - DBSecret
     Properties:
