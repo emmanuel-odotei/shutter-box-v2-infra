@@ -11,7 +11,7 @@
   "containerDefinitions": [
     {
       "name": "shutter-box-container",
-      "image": "850995534424.dkr.ecr.eu-west-1.amazonaws.com/shutter-box-repo:latest",
+      "image": "850995534424.dkr.ecr.eu-central-1.amazonaws.com/shutter-box-repo:latest",
       "portMappings": [
         {
           "containerPort": 8081,
@@ -22,7 +22,7 @@
       "environment": [
         {
           "name": "AWS_REGION",
-          "value": "eu-west-1"
+          "value": "eu-central-1"
         },
         {
           "name": "BUCKET_NAME",
@@ -30,7 +30,7 @@
         },
         {
           "name": "DB_HOST",
-          "value": "shutter-box-db.c18gyq2ow50r.eu-west-1.rds.amazonaws.com"
+          "value": "shutter-box-db.c18gyq2ow50r.eu-central-1.rds.amazonaws.com"
         },
         {
           "name": "DB_PORT",
@@ -46,7 +46,7 @@
         "logDriver": "awslogs",
         "options": {
           "awslogs-group": "/ecs/shutter-box",
-          "awslogs-region": "eu-west-1",
+          "awslogs-region": "eu-central-1",
           "awslogs-stream-prefix": "ecs"
         }
       },
