@@ -68,47 +68,11 @@ Resources:
         - Key: Lab
           Value: !Ref LabTag
 
-  # IAM Policy for ECS Tasks to access SSM
-  TaskSSMPolicy:
-    Type: AWS::IAM::ManagedPolicy
-    Properties:
-      ManagedPolicyName: !Sub ${AppName}-ecs-ssm-policy
-      PolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
-            Action:
-              - ssm:GetParameter
-              - ssm:GetParameters
-              - ssm:GetParametersByPath
-            Resource:
-              - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AppName}/db/*
-              - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AppName}/image-uri/
-
   # ECS Task Execution Role
   TaskExecutionRole:
     Type: AWS::IAM::Role
     Properties:
-      AssumeRolePolicyDocument:
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: ecs-tasks.amazonaws.com
-            Action: sts:AssumeRole
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
-        - arn:aws:iam::aws:policy/AmazonS3FullAccess
-        - !Ref TaskSSMPolicy
-      Tags:
-        - Key: Name
-          Value: !Sub ${AppName}-task-exec-role
-        - Key: Lab
-          Value: !Ref LabTag
-
-  # Application Task Role
-  AppTaskRole:
-    Type: AWS::IAM::Role
-    Properties:
+      RoleName: !Sub ${AppName}-ecs-task-execution-role
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -116,12 +80,60 @@ Resources:
             Principal:
               Service: ecs-tasks.amazonaws.com
             Action: sts:AssumeRole
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/AmazonS3FullAccess
-        - !Ref TaskSSMPolicy
+      Policies:
+        - PolicyName: !Sub ${AppName}-ECRAccessPolicy
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ecr:GetAuthorizationToken
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:BatchGetImage
+                  - ecr:DescribeRepositories
+                  - ecr:ListImages
+                  - ecr:DescribeImages
+                Resource: "*"
+
+        - PolicyName: !Sub ${AppName}-S3AccessPolicy
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                  - s3:DeleteObject
+                  - s3:ListBucket
+                  - s3:CreateBucket
+                Resource:
+                  - !Sub arn:aws:s3:::${S3BucketName}
+                  - !Sub arn:aws:s3:::${S3BucketName}/*
+
+        - PolicyName: !Sub ${AppName}-SSMAccessPolicy
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ssm:GetParameter
+                  - ssm:GetParameters
+                  - ssm:GetParametersByPath
+                Resource:
+                  - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AppName}/db/*
+                  - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AppName}/image-uri/
+
+        - PolicyName: !Sub ${AppName}-LoggingAccess
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                  - logs:CreateLogGroup
+                  - logs:DescribeLogStreams
+                Resource: "*"
       Tags:
         - Key: Name
-          Value: !Sub ${AppName}-task-role
+          Value: !Sub ${AppName}-task-exec-role
         - Key: Lab
           Value: !Ref LabTag
 
@@ -232,7 +244,7 @@ Resources:
       NetworkMode: awsvpc
       RequiresCompatibilities: [FARGATE]
       ExecutionRoleArn: !GetAtt TaskExecutionRole.Arn
-      TaskRoleArn: !GetAtt AppTaskRole.Arn
+      TaskRoleArn: !GetAtt TaskExecutionRole.Arn
       ContainerDefinitions:
         - Name: !Sub ${AppName}-container
           Image: !Ref ECRImageUri
@@ -309,7 +321,7 @@ Resources:
     DependsOn:
       - ECSService
     Properties:
-      MaxCapacity: 5
+      MaxCapacity: 4
       MinCapacity: 2
       ResourceId: !Sub service/${AppName}-ecs-cluster/${AppName}-ecs-service
       RoleARN: !GetAtt ECSAutoScalingRole.Arn
@@ -341,7 +353,7 @@ Resources:
           - Sid: AllowECSAppTaskAccess
             Effect: Allow
             Principal:
-              AWS: !GetAtt AppTaskRole.Arn
+              AWS: !GetAtt TaskExecutionRole.Arn
             Action:
               - "s3:GetObject"
               - "s3:PutObject"

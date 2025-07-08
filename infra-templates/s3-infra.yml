@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Description: Application S3 Bucket with policy
 
 Parameters:
@@ -20,6 +20,12 @@ Resources:
             AllowedMethods: [GET, PUT, POST]
             AllowedOrigins: ["*"]
             MaxAge: 3000
+      LifecycleConfiguration:
+        Rules:
+          - Id: ImageLifecycle
+            Status: Enabled
+            ExpirationInDays: 365
+
       Tags:
         - Key: Name
           Value: !Sub ${AppName}-v2-images

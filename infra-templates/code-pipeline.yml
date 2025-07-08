@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Description: CodePipeline to deploy to ECS using CodeDeploy on ECR image push
 
 Parameters:
@@ -8,7 +8,7 @@ Parameters:
     Type: String
   InfraBucket:
     Type: String
-    Default: shutterbox-cf-templates
+    Default: shutterbox-cfn-templates
   CodeDeployApplication:
     Type: String
   CodeDeployDeploymentGroup:
@@ -20,7 +20,7 @@ Resources:
     Properties:
       RoleName: !Sub ${AppName}-pipeline-role
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Principal:
@@ -29,7 +29,7 @@ Resources:
       Policies:
         - PolicyName: CodePipelinePolicy
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
@@ -37,7 +37,7 @@ Resources:
                   - s3:GetObjectVersion
                   - s3:GetBucketVersioning
                   - s3:PutObject
-                Resource: 
+                Resource:
                   - !Sub arn:aws:s3:::${InfraBucket}/*
                   - !Sub arn:aws:s3:::${InfraBucket}
               - Effect: Allow
@@ -68,7 +68,7 @@ Resources:
     Properties:
       RoleName: !Sub ${AppName}-eventbridge-pipeline-role
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Principal:
@@ -77,7 +77,7 @@ Resources:
       Policies:
         - PolicyName: TriggerPipelinePolicy
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
@@ -132,7 +132,6 @@ Resources:
           Value: !Sub ${AppName}-pipeline
         - Key: Lab
           Value: !Ref LabTag
-
 
   ECRPushEvent:
     Type: AWS::Events::Rule
