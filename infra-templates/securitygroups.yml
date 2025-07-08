@@ -37,9 +37,7 @@ Resources:
   # ECS Security Group
   ECSSecurityGroup:
     Type: AWS::EC2::SecurityGroup
-    DependsOn: 
-      - VPCEndpointSG
-      - ALBSecurityGroup
+    DependsOn: ALBSecurityGroup
     Properties:
       GroupDescription: SG to Allow ALB to ECS
       VpcId: !Ref VPCId
@@ -66,7 +64,6 @@ Resources:
   # RDS Security Group
   RdsSecurityGroup:
     Type: AWS::EC2::SecurityGroup
-    DependsOn: VPCEndpointSG
     Properties:
       GroupDescription: Security group for RDS PostgreSQL
       VpcId: !Ref VPCId
@@ -80,10 +77,10 @@ Resources:
           Value: !Sub ${AppName}-rds-sg
         - Key: Lab
           Value: !Ref LabTag
+
   # RDS Endpoint Security Group
   RdsEndpointSecurityGroup:
     Type: AWS::EC2::SecurityGroup
-    DependsOn: VPCEndpointSG
     Properties:
       GroupDescription: SG for VPC Interface Endpoints (SSM, RDS Data)
       VpcId: !Ref VPCId
