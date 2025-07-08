@@ -1,0 +1,7 @@
+template-file-path: infra-templates/main.yml
+parameters:
+  LabTag: week_6_lab
+  ECRImageUri: /shutter-box/image-uri
+  TemplateS3BaseURL: /shutter-box/template-base-uri
+  AppName: shutter-box
+tags: {}
