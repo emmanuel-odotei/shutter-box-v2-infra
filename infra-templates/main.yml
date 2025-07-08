@@ -40,6 +40,7 @@ Resources:
         AppName: !Ref AppName
         LabTag: !Ref LabTag
         VPCId: !GetAtt VPCStack.Outputs.VPCId
+        VPCEndpointSG: !GetAtt VPCStack.Outputs.VPCEndpointSecurityGroup
 
   ECSAppStack:
     Type: AWS::CloudFormation::Stack
