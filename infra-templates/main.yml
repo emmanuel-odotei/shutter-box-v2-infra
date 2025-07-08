@@ -9,9 +9,12 @@ Parameters:
     Type: String
     Default: week_6_lab
   TemplateS3BaseURL:
-    Description: "S3 Base URL where nested templates are hosted"
-    Type: String
-    Default: "https://shutterbox-cf-templates.s3.eu-west-1.amazonaws.com/v2-infra-templates"
+    Description: "S3 Base URL where templates are stored"
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /shutter-box/template-base-uri
+  ECRImageUri:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /shutter-box/image-uri
 
 Resources:
   S3Stack:
@@ -59,6 +62,7 @@ Resources:
         ALBSecurityGroup: !GetAtt SecurityGroupsStack.Outputs.ALBSecurityGroup
         AppName: !Ref AppName
         LabTag: !Ref LabTag
+        ECRImageUri: !Ref ECRImageUri
 
   CodeDeployStack:
     Type: AWS::CloudFormation::Stack

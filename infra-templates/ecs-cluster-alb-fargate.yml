@@ -4,6 +4,8 @@ Description: ECS Cluster, Fargate Service with ALB and Auto Scaling
 Parameters:
   AppName:
     Type: String
+  ECRImageUri:
+    Type: String
   VPCId:
     Type: AWS::EC2::VPC::Id
   PublicSubnet1:
@@ -66,7 +68,7 @@ Resources:
         - Key: Lab
           Value: !Ref LabTag
 
-  ## IAM Policy for ECS Tasks to access SSM
+  # IAM Policy for ECS Tasks to access SSM
   TaskSSMPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
@@ -81,6 +83,7 @@ Resources:
               - ssm:GetParametersByPath
             Resource:
               - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AppName}/db/*
+              - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AppName}/image-uri/
 
   # ECS Task Execution Role
   TaskExecutionRole:
@@ -95,36 +98,7 @@ Resources:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
         - arn:aws:iam::aws:policy/AmazonS3FullAccess
-      Policies:
-        - PolicyName: AllowSSMSecrets
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - ssm:GetParameters
-                  - ssm:GetParameter
-                  - ssm:GetParametersByPath
-                Resource:
-                  - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AppName}/db/*
-        - PolicyName: AllowECRAccess
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - "ecr:GetAuthorizationToken"
-                  - "ecr:BatchCheckLayerAvailability"
-                  - "ecr:GetDownloadUrlForLayer"
-                  - "ecr:BatchGetImage"
-                  - "ecr:DescribeRepositories"
-                  - "ecr:ListImages"
-                  - "ecr:DescribeImages"
-                  - "logs:CreateLogStream"
-                  - "logs:PutLogEvents"
-                  - "logs:CreateLogGroup"
-                  - "logs:DescribeLogStreams"
-                Resource: "*"
+        - !Ref TaskSSMPolicy
       Tags:
         - Key: Name
           Value: !Sub ${AppName}-task-exec-role
@@ -142,22 +116,9 @@ Resources:
             Principal:
               Service: ecs-tasks.amazonaws.com
             Action: sts:AssumeRole
-
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonS3FullAccess
         - !Ref TaskSSMPolicy
-      Policies:
-        - PolicyName: AllowECRPull
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - ecr:GetAuthorizationToken
-                  - ecr:BatchCheckLayerAvailability
-                  - ecr:GetDownloadUrlForLayer
-                  - ecr:BatchGetImage
-                Resource: "*"
       Tags:
         - Key: Name
           Value: !Sub ${AppName}-task-role
@@ -274,7 +235,7 @@ Resources:
       TaskRoleArn: !GetAtt AppTaskRole.Arn
       ContainerDefinitions:
         - Name: !Sub ${AppName}-container
-          Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${AppName}-repo:latest
+          Image: !Ref ECRImageUri
           Essential: true
           PortMappings:
             - ContainerPort: 8081
