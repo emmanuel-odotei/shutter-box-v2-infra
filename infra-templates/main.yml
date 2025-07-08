@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Description: Root Stack for ECS Java ShutterBox App with S3, Auto Scaling, ALB, Code Deploy
 
 Parameters:
@@ -9,9 +9,9 @@ Parameters:
     Type: String
     Default: week_6_lab
   TemplateS3BaseURL:
-    Description: 'S3 Base URL where nested templates are hosted'
+    Description: "S3 Base URL where nested templates are hosted"
     Type: String
-    Default: 'https://shutterbox-cf-templates.s3.eu-west-1.amazonaws.com/v2-infra-templates'
+    Default: "https://shutterbox-cf-templates.s3.eu-west-1.amazonaws.com/v2-infra-templates"
 
 Resources:
   S3Stack:
@@ -88,7 +88,7 @@ Resources:
 
   RDSStack:
     Type: AWS::CloudFormation::Stack
-    DependsOn: 
+    DependsOn:
       - VPCStack
       - SecurityGroupsStack
     Properties:
@@ -99,7 +99,6 @@ Resources:
         VPCId: !GetAtt VPCStack.Outputs.VPCId
         PrivateSubnet1: !GetAtt VPCStack.Outputs.PrivateSubnet1Id
         PrivateSubnet2: !GetAtt VPCStack.Outputs.PrivateSubnet2Id
-        VPCEndpointSG: !GetAtt VPCStack.Outputs.VPCEndpointSG
         RdsSecurityGroup: !GetAtt SecurityGroupsStack.Outputs.RdsSecurityGroup
         RdsVPCEndpointSG: !GetAtt SecurityGroupsStack.Outputs.RdsVPCEndpointSG
 
