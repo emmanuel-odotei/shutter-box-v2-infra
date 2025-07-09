@@ -1,7 +1,7 @@
 {
   "family": "shutter-box-task",
-  "executionRoleArn": "arn:aws:iam::850995534424:role/sbox-infra-ECSAppStack-1CS6U2AIPP-TaskExecutionRole-uR5rgJp8oEHf",
-  "taskRoleArn": "arn:aws:iam::850995534424:role/sbox-infra-ECSAppStack-1CS6U2AIPPIAJ-AppTaskRole-9o2fNDzwhaLx",
+  "executionRoleArn": "arn:aws:iam::850995534424:role/shutter-box-ecs-task-execution-role",
+  "taskRoleArn": "arn:aws:iam::850995534424:role/shutter-box-ecs-task-execution-role",
   "networkMode": "awsvpc",
   "requiresCompatibilities": [
     "FARGATE"
