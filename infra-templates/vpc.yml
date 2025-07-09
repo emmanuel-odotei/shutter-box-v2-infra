@@ -15,7 +15,7 @@ Resources:
   SBoxVPC:
     Type: AWS::EC2::VPC
     Properties:
-      CidrBlock: 10.120.0.0/16
+      CidrBlock: 10.0.0.0/16
       EnableDnsSupport: true
       EnableDnsHostnames: true
       Tags:
@@ -34,7 +34,7 @@ Resources:
         - IpProtocol: tcp
           FromPort: 443
           ToPort: 443
-          CidrIp: 10.120.0.0/16
+          CidrIp: 10.0.0.0/16
       Tags:
         - Key: Name
           Value: !Sub ${AppName}-vpce-sg
@@ -62,8 +62,8 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref SBoxVPC
-      CidrBlock: 10.120.1.0/24
-      AvailabilityZone: !Select [0, !GetAZs ""]
+      CidrBlock: 10.0.1.0/24
+      AvailabilityZone: !Select [0, !GetAZs '']
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
@@ -75,8 +75,8 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref SBoxVPC
-      CidrBlock: 10.120.2.0/24
-      AvailabilityZone: !Select [1, !GetAZs ""]
+      CidrBlock: 10.0.2.0/24
+      AvailabilityZone: !Select [1, !GetAZs '']
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
@@ -88,8 +88,8 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref SBoxVPC
-      CidrBlock: 10.120.3.0/24
-      AvailabilityZone: !Select [0, !GetAZs ""]
+      CidrBlock: 10.0.3.0/24
+      AvailabilityZone: !Select [0, !GetAZs '']
       Tags:
         - Key: Name
           Value: !Sub ${AppName}-private-subnet-1
@@ -100,8 +100,8 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref SBoxVPC
-      CidrBlock: 10.120.4.0/24
-      AvailabilityZone: !Select [1, !GetAZs ""]
+      CidrBlock: 10.0.4.0/24
+      AvailabilityZone: !Select [1, !GetAZs '']
       Tags:
         - Key: Name
           Value: !Sub ${AppName}-private-subnet-2
@@ -248,7 +248,7 @@ Resources:
         - !Ref PrivateSubnet2
       PrivateDnsEnabled: true
       SecurityGroupIds:
-        - !Ref VPCEndpointSG
+        - !GetAtt VPCEndpointSG.GroupId
       Tags:
         - Key: Name
           Value: !Sub ${AppName}-cw-endpoint

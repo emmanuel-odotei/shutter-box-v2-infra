@@ -236,13 +236,13 @@ Resources:
   # ECS Task Definition
   TaskDefinition:
     Type: AWS::ECS::TaskDefinition
-    DependsOn: CloudWatchLogGroup
     Properties:
       Family: !Sub ${AppName}-task
       Cpu: 256
       Memory: 512
       NetworkMode: awsvpc
-      RequiresCompatibilities: [FARGATE]
+      RequiresCompatibilities: 
+        - FARGATE
       ExecutionRoleArn: !GetAtt TaskExecutionRole.Arn
       TaskRoleArn: !GetAtt TaskExecutionRole.Arn
       ContainerDefinitions:
@@ -274,6 +274,7 @@ Resources:
               awslogs-group: !Ref CloudWatchLogGroup
               awslogs-region: !Ref "AWS::Region"
               awslogs-stream-prefix: ecs
+              awslogs-create-group: "true"
           HealthCheck:
             Command:
               - "CMD-SHELL"
@@ -296,14 +297,19 @@ Resources:
       ServiceName: !Sub ${AppName}-ecs-service
       Cluster: !Ref ECSCluster
       LaunchType: FARGATE
-      DesiredCount: 0
+      DesiredCount: 2
+      HealthCheckGracePeriodSeconds: 120
       DeploymentController:
         Type: CODE_DEPLOY
       NetworkConfiguration:
         AwsvpcConfiguration:
           AssignPublicIp: DISABLED
-          Subnets: [!Ref PrivateSubnet1, !Ref PrivateSubnet2]
-          SecurityGroups: [!Ref ECSSecurityGroup]
+          Subnets:
+            - !Ref PrivateSubnet1
+            - !Ref PrivateSubnet2
+          SecurityGroups: 
+            - !Ref ECSSecurityGroup
+            - !Ref VPCEndpointSG
       LoadBalancers:
         - ContainerName: !Sub ${AppName}-container
           ContainerPort: 8081

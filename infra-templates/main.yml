@@ -105,6 +105,7 @@ Resources:
         PrivateSubnet2: !GetAtt VPCStack.Outputs.PrivateSubnet2Id
         RdsSecurityGroup: !GetAtt SecurityGroupsStack.Outputs.RdsSecurityGroup
         RdsVPCEndpointSG: !GetAtt SecurityGroupsStack.Outputs.RdsVPCEndpointSG
+        VPCEndpointSG: !GetAtt VPCStack.Outputs.VPCEndpointSG
 
 Outputs:
   LoadBalancerDNS:
