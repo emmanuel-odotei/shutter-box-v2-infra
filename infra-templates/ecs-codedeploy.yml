@@ -88,7 +88,7 @@ Resources:
                 - !Ref ListenerArn
       ECSServices:
         - ClusterName: !Ref ClusterName
-          ServiceName: !Sub arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:service/${ClusterName}/${ServiceName}
+          ServiceName: !Ref ServiceName
             
 
 Outputs:
