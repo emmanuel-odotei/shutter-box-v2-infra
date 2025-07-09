@@ -278,7 +278,7 @@ Resources:
           HealthCheck:
             Command:
               - "CMD-SHELL"
-              - "/bin/sh -c 'curl -f http://localhost:8080/actuator/health || exit 1'"
+              - "/bin/sh -c 'curl -f http://localhost:8081/actuator/health || exit 1'"
             Interval: 30
             Timeout: 10
             Retries: 3

@@ -38,7 +38,17 @@
         },
         {
           "name": "DB_NAME",
-          "value": "shutter-box-db"
+          "value": "shutterboxdb"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "DB_USERNAME",
+          "valueFrom": "arn:aws:ssm:eu-central-1:850995534424:parameter/shutter-box/db/username"
+        },
+        {
+          "name": "DB_PASSWORD",
+          "valueFrom": "arn:aws:ssm:eu-central-1:850995534424:parameter/shutter-box/db/password"
         }
       ],
       "essential": true,
@@ -47,6 +57,7 @@
         "options": {
           "awslogs-group": "/ecs/shutter-box",
           "awslogs-region": "eu-central-1",
+          "awslogs-create-group": "true",
           "awslogs-stream-prefix": "ecs"
         }
       },
@@ -56,9 +67,9 @@
           "curl -f http://localhost:8081/actuator/health || exit 1"
         ],
         "interval": 30,
-        "timeout": 5,
+        "timeout": 10,
         "retries": 3,
-        "startPeriod": 10
+        "startPeriod": 60
       }
     }
   ]
