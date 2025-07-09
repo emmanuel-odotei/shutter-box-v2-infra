@@ -194,6 +194,7 @@ Resources:
             Resource:
               - !Sub "arn:aws:s3:::${S3BucketName}"
               - !Sub "arn:aws:s3:::${S3BucketName}/*"
+              - !Sub "arn:aws:s3:::prod-${AWS::Region}-starport-layer-bucket/*"
       Tags:
         - Key: Name
           Value: !Sub ${AppName}-s3-endpoint
