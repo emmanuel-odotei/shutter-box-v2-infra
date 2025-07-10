@@ -89,7 +89,6 @@ Resources:
 
   DBPortParam:
     Type: AWS::SSM::Parameter
-    DependsOn: RDSInstance
     Properties:
       Name: !Sub /${AppName}/db/port
       Type: String
