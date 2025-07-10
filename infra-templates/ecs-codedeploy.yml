@@ -60,9 +60,6 @@ Resources:
   # Deployment Group
   CodeDeployDeploymentGroup:
     Type: AWS::CodeDeploy::DeploymentGroup
-    DependsOn: 
-      - ECSCodeDeployRole
-      - CodeDeployApp
     Properties:
       ApplicationName: !Ref CodeDeployApp
       DeploymentGroupName: !Sub ${AppName}-codedeploy-group

@@ -36,7 +36,6 @@ Resources:
 
   SecurityGroupsStack:
     Type: AWS::CloudFormation::Stack
-    DependsOn: VPCStack
     Properties:
       TemplateURL: !Sub "${TemplateS3BaseURL}/securitygroups.yml"
       Parameters:
@@ -66,7 +65,6 @@ Resources:
 
   CodeDeployStack:
     Type: AWS::CloudFormation::Stack
-    DependsOn: ECSAppStack
     DeletionPolicy: Delete
     Properties:
       TemplateURL: !Sub "${TemplateS3BaseURL}/ecs-codedeploy.yml"
@@ -81,7 +79,6 @@ Resources:
 
   CodePipelineStack:
     Type: AWS::CloudFormation::Stack
-    DependsOn: CodeDeployStack
     Properties:
       TemplateURL: !Sub "${TemplateS3BaseURL}/code-pipeline.yml"
       Parameters:
@@ -92,9 +89,6 @@ Resources:
 
   RDSStack:
     Type: AWS::CloudFormation::Stack
-    DependsOn:
-      - VPCStack
-      - SecurityGroupsStack
     Properties:
       TemplateURL: !Sub "${TemplateS3BaseURL}/rds.yml"
       Parameters:

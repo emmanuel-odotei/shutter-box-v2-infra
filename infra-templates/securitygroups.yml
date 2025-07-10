@@ -37,7 +37,6 @@ Resources:
   # ECS Security Group
   ECSSecurityGroup:
     Type: AWS::EC2::SecurityGroup
-    DependsOn: ALBSecurityGroup
     Properties:
       GroupDescription: SG to Allow ALB to ECS
       VpcId: !Ref VPCId

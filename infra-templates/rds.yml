@@ -72,7 +72,6 @@ Resources:
 
   DBHostParam:
     Type: AWS::SSM::Parameter
-    DependsOn: RDSInstance
     Properties:
       Name: !Sub /${AppName}/db/host
       Type: String
@@ -100,9 +99,6 @@ Resources:
   RDSInstance:
     Type: AWS::RDS::DBInstance
     DeletionPolicy: Delete
-    DependsOn:
-      - DBSubnetGroup
-      - DBSecret
     Properties:
       DBInstanceIdentifier: !Sub ${AppName}-db
       Engine: postgres
