@@ -130,32 +130,6 @@ Resources:
         - Key: Lab
           Value: !Ref LabTag
 
-  RdsEndpoint:
-    Type: AWS::EC2::VPCEndpoint
-    Properties:
-      VpcId: !Ref VPCId
-      ServiceName: !Sub com.amazonaws.${AWS::Region}.rds
-      VpcEndpointType: Interface
-      SubnetIds:
-        - !Ref PrivateSubnet1
-        - !Ref PrivateSubnet2
-      PrivateDnsEnabled: true
-      SecurityGroupIds:
-        - !Ref VPCEndpointSG
-
-  RdsDataEndpoint:
-    Type: AWS::EC2::VPCEndpoint
-    Properties:
-      VpcId: !Ref VPCId
-      ServiceName: !Sub com.amazonaws.${AWS::Region}.rds-data
-      VpcEndpointType: Interface
-      SubnetIds:
-        - !Ref PrivateSubnet1
-        - !Ref PrivateSubnet2
-      PrivateDnsEnabled: true
-      SecurityGroupIds:
-        - !Ref RdsVPCEndpointSG
-
   SSMEndpoint:
     Type: AWS::EC2::VPCEndpoint
     Properties:

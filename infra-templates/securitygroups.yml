@@ -67,24 +67,6 @@ Resources:
           Value: !Sub ${AppName}-rds-sg
         - Key: Lab
           Value: !Ref LabTag
-
-  # RDS Endpoint Security Group
-  RdsEndpointSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: SG for VPC Interface Endpoints (SSM, RDS Data)
-      VpcId: !Ref VPCId
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 443
-          ToPort: 443
-          SourceSecurityGroupId: !Ref VPCEndpointSG
-      Tags:
-        - Key: Name
-          Value: !Sub ${AppName}-vpce-rds-sg
-        - Key: Lab
-          Value: !Ref LabTag
-
 Outputs:
   ALBSecurityGroup:
     Description: SG for Application Load Balancer
@@ -103,9 +85,3 @@ Outputs:
     Value: !Ref RdsSecurityGroup
     Export:
       Name: !Sub ${AppName}-rds-sg
-
-  RdsVPCEndpointSG:
-    Description: Security group ID for RDS VPC endpoint
-    Value: !Ref RdsEndpointSecurityGroup
-    Export:
-      Name: !Sub ${AppName}-vpce-rds-sg
