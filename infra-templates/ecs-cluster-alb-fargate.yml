@@ -279,10 +279,10 @@ Resources:
             Command:
               - "CMD-SHELL"
               - "/bin/sh -c 'curl -f http://localhost:8081/actuator/health || exit 1'"
-            Interval: 30
-            Timeout: 10
+            Interval: 10
+            Timeout: 5
             Retries: 3
-            StartPeriod: 60
+            StartPeriod: 100
       Tags:
         - Key: Name
           Value: !Sub ${AppName}-task-definition

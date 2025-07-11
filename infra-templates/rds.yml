@@ -18,6 +18,9 @@ Parameters:
   RdsVPCEndpointSG:
     Description: "Security Group for RDS VPC endpoints"
     Type: AWS::EC2::SecurityGroup::Id
+  VPCEndpointSG:
+    Description: "Security Group for VPC endpoints"
+    Type: AWS::EC2::SecurityGroup::Id
 
 Resources:
   DBSecret:
@@ -138,7 +141,7 @@ Resources:
         - !Ref PrivateSubnet2
       PrivateDnsEnabled: true
       SecurityGroupIds:
-        - !Ref RdsVPCEndpointSG
+        - !Ref VPCEndpointSG
 
 Outputs:
   RDSInstanceEndpoint:
