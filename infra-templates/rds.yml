@@ -15,9 +15,6 @@ Parameters:
   RdsSecurityGroup:
     Description: "Security Group for RDS"
     Type: AWS::EC2::SecurityGroup::Id
-  RdsVPCEndpointSG:
-    Description: "Security Group for RDS VPC endpoints"
-    Type: AWS::EC2::SecurityGroup::Id
   VPCEndpointSG:
     Description: "Security Group for VPC endpoints"
     Type: AWS::EC2::SecurityGroup::Id
